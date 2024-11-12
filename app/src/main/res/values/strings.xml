@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">FinancePal</string>
+    <string-array name="category_options">
+        <item>Choose Category</item>
+        <item>Sent</item>
+        <item>Received</item>
+    </string-array>
+    <string name="text_label_1">All</string>
+    <string name="text_label_2">Sent</string>
+    <string name="text_label_3">Received</string>
+</resources>
