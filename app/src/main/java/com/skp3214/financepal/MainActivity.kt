@@ -136,37 +136,49 @@ class MainActivity : AppCompatActivity() {
             .create()
 
         btnSave.setOnClickListener {
-            val name = etName.text.toString().ifEmpty { existingModel?.name ?: "" }
-            val amount = etAmount.text.toString().toDoubleOrNull() ?: existingModel?.amount ?: 0.0
-            val description = etDescription.text.toString().ifEmpty { existingModel?.description ?: "" }
-            val date = tvDate.text.toString().ifEmpty { existingModel?.date ?: "" }
-            val dueDate = tvDueDate.text.toString().ifEmpty { existingModel?.dueDate ?: "" }
-            val category = spinnerCategory.selectedItem?.toString() ?: existingModel?.category ?: ""
-            if(selectedImage.drawable == null) {
-                selectedImage.setImageResource(R.drawable.nossuploaded)
-            }
-            val image = imageRepository.bitmapToByteArray(selectedImage.drawable.toBitmap())
-            if (existingModel != null) {
-                existingModel.apply {
-                    if(id != existingModel.id) id = existingModel.id
-                    if (this.name != name) this.name = name
-                    if (this.amount != amount) this.amount = amount
-                    if (this.description != description) this.description = description
-                    if (this.date != date) this.date = date
-                    if (this.dueDate != dueDate) this.dueDate = dueDate
-                    if (this.category != category) this.category = category
-                    if (this.image != imageRepository.byteArrayToBitmap(image)) this.image = imageRepository.byteArrayToBitmap(image)
-                }
-                databaseHelper.updateItem(existingModel)
-            } else {
-                databaseHelper.addItem(name, amount, description, category, image, date, dueDate)
-            }
+            val name = etName.text.toString().trim()
+            val amountText = etAmount.text.toString().trim()
+            val description = etDescription.text.toString().trim()
+            val date = tvDate.text.toString().trim()
+            val dueDate = tvDueDate.text.toString().trim()
+            val category = spinnerCategory.selectedItem?.toString()?.trim() ?: ""
 
-            loadAllDataFromDatabase(databaseHelper, imageRepository, list)
-            adapter.notifyDataSetChanged()
-            dialog.dismiss()
+            if (name.isEmpty() || amountText.isEmpty() || description.isEmpty() || date.isEmpty() || dueDate.isEmpty() ||
+                (category != "Sent" && category != "Received")
+            ) {
+                AlertDialog.Builder(this)
+                    .setTitle("Incomplete Information")
+                    .setMessage("Please fill all fields and select a valid category (Sent or Received) before saving.")
+                    .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
+                    .show()
+            } else {
+                val amount = amountText.toDoubleOrNull() ?: 0.0
+
+                if (selectedImage.drawable == null) {
+                    selectedImage.setImageResource(R.drawable.nossuploaded)
+                }
+                val image = imageRepository.bitmapToByteArray(selectedImage.drawable.toBitmap())
+
+                if (existingModel != null) {
+                    existingModel.apply {
+                        this.name = name
+                        this.amount = amount
+                        this.description = description
+                        this.date = date
+                        this.dueDate = dueDate
+                        this.category = category
+                        this.image = imageRepository.byteArrayToBitmap(image)
+                    }
+                    databaseHelper.updateItem(existingModel)
+                } else {
+                    databaseHelper.addItem(name, amount, description, category, image, date, dueDate)
+                }
+
+                loadAllDataFromDatabase(databaseHelper, imageRepository, list)
+                adapter.notifyDataSetChanged()
+                dialog.dismiss()
+            }
         }
         dialog.show()
     }
-
 }
