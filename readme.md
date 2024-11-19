@@ -86,5 +86,3 @@ Contributions are welcome! 🤝 Please fork this repository, make your changes, 
 4. Push to the branch (`git push origin feature-branch`). 🚀
 5. Open a Pull Request. 🔍
 
-
-Feel free to customize this further based on additional features or details specific to your project! 🚀
