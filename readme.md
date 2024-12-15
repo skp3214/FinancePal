@@ -71,7 +71,6 @@ https://github.com/user-attachments/assets/c2c09559-df17-4060-a10d-27a3ee60e0b1
 - **Kotlin**: Main programming language for Android development. 🚀
 - **SQLite**: Local database for storing user data. 🗂️
 - **Material Design Components**: UI elements for consistent design and experience. 🎨
-- **Android Jetpack**: Architecture components like RecyclerView and CardView. 🧰
 - **Custom Adapter**: RecyclerView adapter with a click listener for flexible UI handling. 🔌
 
 ## 🙌 Contributing
