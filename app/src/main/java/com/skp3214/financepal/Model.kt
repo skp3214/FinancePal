@@ -6,11 +6,11 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "FinancePal")
 data class Model(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val name: String,
-    val amount: Double,
-    val description: String,
-    val category: String,
-    val image: ByteArray,
-    val date: String,
-    val dueDate: String
+    var name: String,
+    var amount: Double,
+    var description: String,
+    var category: String,
+    var image: ByteArray,
+    var date: String,
+    var dueDate: String
 )

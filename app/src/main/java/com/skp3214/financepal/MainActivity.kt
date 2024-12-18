@@ -4,7 +4,6 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.net.Uri
-import androidx.activity.enableEdgeToEdge
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.Button
@@ -12,6 +11,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -19,10 +19,12 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -34,7 +36,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var imageUri: Uri
     private lateinit var imagePickerLauncher: ActivityResultLauncher<String>
     private lateinit var selectedImage: ImageView
-
+    private lateinit var dbs: FinancePalDatabase
+    private lateinit var imageRepository: ImageRepository
+    private lateinit var financePalRepository: FinancePalRepository
+    private lateinit var financePalViewModel: FinanceViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -52,15 +57,16 @@ class MainActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerview)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        val imageRepository = ImageRepository(resources)
-        val databaseHelper = SQLiteDBHelper(this, null,imageRepository)
+        imageRepository = ImageRepository(resources)
+        dbs = DatabaseProvider.getDatabase(this)
+        financePalRepository = FinancePalRepository(dbs.financepalDao())
+        financePalViewModel = FinanceViewModel(financePalRepository)
 
-        loadAllDataFromDatabase(databaseHelper, imageRepository, list)
+        loadAllDataFromDatabase(financePalViewModel, list)
 
         adapter = CustomAdapter(list, { model ->
-
-            databaseHelper.delItemByID(model.id)
-            loadAllDataFromDatabase(databaseHelper, imageRepository, list)
+            deleteItem(model)
+            loadAllDataFromDatabase(financePalViewModel, list)
             adapter.notifyDataSetChanged()
         }, { model ->
             val intent = Intent(this, ItemDetailActivity::class.java)
@@ -71,7 +77,7 @@ class MainActivity : AppCompatActivity() {
             intent.putExtra("category", model.category)
             intent.putExtra("date", model.date)
             intent.putExtra("dueDate", model.dueDate)
-            intent.putExtra("image", imageRepository.bitmapToByteArray(model.image))
+            intent.putExtra("image", model.image)
             startActivity(intent)
         })
 
@@ -79,11 +85,11 @@ class MainActivity : AppCompatActivity() {
 
         val fab = findViewById<FloatingActionButton>(R.id.fab)
         fab.setOnClickListener {
-            showAddItemDialog(imageRepository, databaseHelper)
+            showAddItemDialog(null)
         }
 
-        val bottomNavigationView= findViewById<BottomNavigationView>(R.id.bottom_navigation)
-        filterDataWithCategory( bottomNavigationView, databaseHelper, imageRepository,list,adapter)
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
+        filterDataWithCategory(bottomNavigationView, financePalViewModel, list, adapter,lifecycleScope)
 
         imagePickerLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
             uri?.let {
@@ -93,7 +99,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun showAddItemDialog(imageRepository: ImageRepository, databaseHelper: SQLiteDBHelper, existingModel: Model? = null) {
+
+    private fun deleteItem(model: Model) {
+        lifecycleScope.launch {
+            financePalViewModel.deleteEntry(model)
+            loadAllDataFromDatabase(financePalViewModel, list)
+        }
+    }
+
+    fun showAddItemDialog(existingModel: Model? = null) {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialogue_form, null)
         val etName = dialogView.findViewById<EditText>(R.id.et_name)
         val etAmount = dialogView.findViewById<EditText>(R.id.et_amount)
@@ -127,8 +141,8 @@ class MainActivity : AppCompatActivity() {
             etDescription.setText(it.description)
             tvDate.text = it.date
             tvDueDate.text = it.dueDate
-            spinnerCategory.setSelection(getCategoryPosition(it.category,resources))
-            selectedImage.setImageBitmap(it.image)
+            spinnerCategory.setSelection(getCategoryPosition(it.category, resources))
+            selectedImage.setImageBitmap(imageRepository.byteArrayToBitmap(it.image))
         }
 
         val dialog = AlertDialog.Builder(this)
@@ -153,29 +167,30 @@ class MainActivity : AppCompatActivity() {
                     .show()
             } else {
                 val amount = amountText.toDoubleOrNull() ?: 0.0
-
                 if (selectedImage.drawable == null) {
                     selectedImage.setImageResource(R.drawable.nossuploaded)
                 }
                 val image = imageRepository.bitmapToByteArray(selectedImage.drawable.toBitmap())
-
-                if (existingModel != null) {
-                    existingModel.apply {
-                        this.name = name
-                        this.amount = amount
-                        this.description = description
-                        this.date = date
-                        this.dueDate = dueDate
-                        this.category = category
-                        this.image = imageRepository.byteArrayToBitmap(image)
+                lifecycleScope.launch {
+                    if (existingModel != null) {
+                        existingModel.apply {
+                            this.name = name
+                            this.amount = amount
+                            this.description = description
+                            this.date = date
+                            this.dueDate = dueDate
+                            this.category = category
+                            this.image = image
+                        }
+                        financePalViewModel.updateEntry(existingModel)
+                    } else {
+                        val newItem = Model(0, name, amount, description, category,image,date, dueDate)
+                        financePalViewModel.addEntry(newItem)
                     }
-                    databaseHelper.updateItem(existingModel)
-                } else {
-                    databaseHelper.addItem(name, amount, description, category, image, date, dueDate)
-                }
 
-                loadAllDataFromDatabase(databaseHelper, imageRepository, list)
-                adapter.notifyDataSetChanged()
+                    loadAllDataFromDatabase(financePalViewModel,list)
+                    adapter.notifyDataSetChanged()
+                }
                 dialog.dismiss()
             }
         }

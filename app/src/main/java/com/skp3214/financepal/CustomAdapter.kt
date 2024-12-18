@@ -36,7 +36,8 @@ class CustomAdapter(
         holder.descriptionTextView.text = model.description
         "Date: ${model.date}".also { holder.dateTextView.text = it }
         "Due Date: ${model.dueDate}".also { holder.dueDateTextView.text = it }
-        holder.imageView.setImageBitmap(model.image)
+        val imageRepository = ImageRepository(holder.itemView.resources)
+        holder.imageView.setImageBitmap(imageRepository.byteArrayToBitmap(model.image))
 
         holder.itemView.setOnClickListener { onItemClicked(model) }
 

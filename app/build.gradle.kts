@@ -40,6 +40,7 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     kapt("androidx.room:room-compiler:2.6.1") // Correct placement of kapt
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
