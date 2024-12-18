@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt) // Ensure this is added
 }
 
 android {
@@ -36,7 +37,8 @@ android {
 }
 
 dependencies {
-
+    implementation(libs.androidx.room.runtime)
+    kapt("androidx.room:room-compiler:2.6.1") // Correct placement of kapt
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
