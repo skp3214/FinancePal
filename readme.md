@@ -1,85 +1,106 @@
-# 🤑 FinancePal 💰
+# 🤑 FinancePal: MVVM Architecture 💰  
 
-FinancePal is an Android app that helps you manage your personal finances with ease. 💳 Users can easily add, view, and categorize their financial entries (e.g., `Sent` and `Received`) with the option for quick filtering. 🔍 The app features a clean and intuitive UI built with Material Design components, and it uses a SQLite database for persistent local storage. 🗂️
+FinancePal is an Android app designed to simplify personal finance management. 💳 Users can add, view, categorize, and manage financial entries (e.g., `Sent` and `Received`) with advanced features for an intuitive experience. 🔍 The app leverages modern Android development practices, implementing MVVM architecture with Room Database for robust data management. 🗂️  
 
-## 📋 Table of Contents
+---
 
-- [🚀 Features](#-features)
-- [📱 Screenshots](#-screenshots)
-- [🛠️ Getting Started](#️-getting-started)
-  - [Installation](#installation)
-- [🤖 Usage](#-usage)
-- [🔧 Technologies Used](#-technologies-used)
-- [🙌 Contributing](#-contributing)
+## 📋 Table of Contents  
 
-## 🚀 Features
+- [🚀 Features](#-features)  
+- [📱 Screenshots](#-screenshots)  
+- [🛠️ Getting Started](#️-getting-started)  
+  - [Installation](#installation)  
+- [🤖 Usage](#-usage)  
+- [🔧 Technologies Used](#-technologies-used)  
+- [🙌 Contributing](#-contributing)  
 
-- **Add Financial Entries**: Easily add entries with a name, amount, description, date, due date, and category. 📝
-- **Categorize Transactions**: Separate entries by categories such as "Sent" and "Received." 🗂️
-- **Image Support**: Attach an image or receipt for each entry. 📷
-- **Persistent Storage**: Stores entries locally using SQLite, ensuring data is saved even after the app is closed. 💾
-- **Dynamic Filtering**: Filter entries based on category for quick access. 🔍
-- **Responsive Layout**: Supports various screen sizes and orientations. 📱
-- **Material Design**: User interface designed with Material Design components for a modern and intuitive experience. 🎨
+---
 
-## 📱 Screenshots
+## 🚀 Features  
 
-(Include screenshots of the main screens like the add entry screen, category filters, etc., to visually showcase your app.)
+- **MVVM Architecture**: Ensures a clear separation of concerns with ViewModel, Repository, and LiveData for lifecycle-aware UI updates. 🛠️  
+- **Room Database**: Provides efficient and reliable local data storage with entity-based schema. 🗂️  
+- **Add Financial Entries**: Add entries with details like name, amount, description, date, category, and optional image. 📝  
+- **Categorization**: Sort entries into categories like "Sent" or "Received." 📂  
+- **Swipe to Delete & Undo**: Swipe left to delete an entry with an option to undo the action. 🧹↩️  
+- **Scrollable Descriptions**: Long descriptions are fully readable with a dedicated scrollable section. 📜  
+- **Persistent Storage**: Data remains stored locally even after the app is closed. 💾  
+- **Dynamic Filtering**: Quickly filter entries by category for better data navigation. 🔍  
+- **Proper Folder Structure**: Organized codebase with clearly separated components (e.g., `data`, `ui`, `viewmodel`, `repository`). 📁  
+- **Responsive Layout**: Supports various screen sizes and orientations seamlessly. 📱  
+- **Material Design**: Clean and modern UI following Material Design principles. 🎨  
 
-## 🛠️ Getting Started
+---
 
-### Installation
+## 📱 Screenshots  
 
-1. **Clone the Repository**: 
-   ```bash
-   git clone https://github.com/skp3214/FinancePal.git
-   ```
+![screenshot](https://github.com/user-attachments/assets/fe5d6c6f-5558-427b-bf58-fc49baaea037)
 
-2. **Open in Android Studio**:
-   - Launch Android Studio.
-   - Select "Open an existing project" and choose the `financepal` folder.
+---
 
-3. **Build the Project**:
-   - Click on `Build > Rebuild Project` to sync dependencies and build the project.
+## 🛠️ Getting Started  
 
-4. **Run the Project**:
-   - Connect a device or start an emulator.
-   - Click on the `Run` button or select `Run > Run 'app'` in the menu.
+### Installation  
 
-## 🤖 Usage
+1. **Clone the Repository**:  
+   ```bash  
+   git clone -b roomdb https://github.com/skp3214/FinancePal.git  
+   ```  
 
-1. **Add Entry**:
-   - Open the app and click on the "Add Entry" button. 📝
-   - Fill in the entry details, including name, amount, description, date, and category.
-   - Optionally, attach an image and select a due date. 📸
+2. **Open in Android Studio**:  
+   - Launch Android Studio.  
+   - Select "Open an existing project" and choose the `financepal` folder.  
 
-2. **View and Filter Entries**:
-   - Use the navigation menu to filter entries by categories ("Sent" or "Received"). 🔍
-   - Select "All" to view all entries regardless of category.
+3. **Build the Project**:  
+   - Click on `Build > Rebuild Project` to sync dependencies and build the project.  
 
-3. **Edit or Delete Entries**:
-   - Tap an entry to edit or delete it. ✏️
-   - Use the delete option in the entry options menu. 🗑️
+4. **Run the Project**:  
+   - Connect a device or start an emulator.  
+   - Click on the `Run` button or select `Run > Run 'app'` in the menu.  
 
-## 🔧 Technologies Used
+---
 
-- **Kotlin**: Main programming language for Android development. 🚀
-- **SQLite**: Local database for storing user data. 🗂️
-- **Material Design Components**: UI elements for consistent design and experience. 🎨
-- **Android Jetpack**: Architecture components like RecyclerView and CardView. 🧰
-- **Custom Adapter**: RecyclerView adapter with a click listener for flexible UI handling. 🔌
+## 🤖 Usage  
 
-## 🙌 Contributing
+1. **Add Entry**:  
+   - Open the app and click on "Add Entry."  
+   - Fill in the entry details, including optional image attachment and category selection.  
 
-Contributions are welcome! 🤝 Please fork this repository, make your changes, and submit a pull request.
+2. **Swipe to Delete & Undo**:  
+   - Swipe left on an entry to delete it.  
+   - Use the Undo button to restore the deleted entry.  
 
-### Steps to Contribute:
+3. **Scroll Long Descriptions**:  
+   - Tap an entry with a long description to view the full content in a scrollable section.  
 
-1. Fork this repository. 🍴
-2. Create a new branch (`git checkout -b feature-branch`). 🌱
-3. Make your changes and commit them (`git commit -m 'Add feature'`). 💻
-4. Push to the branch (`git push origin feature-branch`). 🚀
-5. Open a Pull Request. 🔍
+4. **Filter Entries**:  
+   - Navigate between categories like "Sent" or "Received" to view relevant entries.  
 
+---
 
-Feel free to customize this further based on additional features or details specific to your project! 🚀
+## 🔧 Technologies Used  
+
+- **Kotlin**: Language used for app development. 🚀  
+- **Room Database**: Abstraction over SQLite for reliable and efficient local storage. 🗂️  
+- **MVVM Architecture**: Separates UI and logic using ViewModel, Repository, and LiveData. 📊  
+- **Material Design Components**: Ensures a visually consistent and modern UI. 🎨  
+- **Swipe-to-Delete**: Implemented using ItemTouchHelper for RecyclerView. ↩️  
+- **RecyclerView with Custom Adapter**: Displays entries with flexible interaction options. 🔌  
+- **Android Jetpack Components**: Includes ViewModel, LiveData, and Room. 🧰  
+
+---
+
+## 🙌 Contributing  
+
+Contributions are welcome! 🤝 Please fork this repository, make your changes, and submit a pull request.  
+
+### Steps to Contribute:  
+
+1. Fork this repository. 🍴  
+2. Create a new branch (`git checkout -b feature-branch`). 🌱  
+3. Make your changes and commit them (`git commit -m 'Add feature'`). 💻  
+4. Push to the branch (`git push origin feature-branch`). 🚀  
+5. Open a Pull Request. 🔍  
+
+---  
+   
