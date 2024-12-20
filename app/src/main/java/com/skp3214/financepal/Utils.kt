@@ -8,26 +8,9 @@ import android.view.Gravity
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.widget.PopupMenu
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import androidx.lifecycle.LifecycleCoroutineScope
-import kotlinx.coroutines.launch
-
-fun loadAllDataFromDatabase(financePalViewModel: FinanceViewModel, list: MutableList<Model>) {
-    list.clear()
-    financePalViewModel.getAllEntries { entries ->
-        list.addAll(entries)
-    }
-}
-
-fun loadAllCategoryDataFromDatabase(financePalViewModel: FinanceViewModel, list: MutableList<Model>, category: String) {
-    list.clear()
-    financePalViewModel.getEntriesByCategory(category) { entries ->
-        list.addAll(entries)
-    }
-}
 
 fun setupDeadlineBar(view: View, startDate: String, dueDate: String) {
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -97,40 +80,6 @@ fun showMenuIcon(holder: CustomAdapter.ModelViewHolder, menuIcon: ImageView, mod
 fun getCategoryPosition(category: String, resources: Resources): Int {
     val categories = resources.getStringArray(R.array.category_options)
     return categories.indexOf(category)
-}
-
-var currentTab: Int = R.id.item_1
-
-
-fun filterDataWithCategory(
-    bottomNavigationView: BottomNavigationView,
-    financePalViewModel: FinanceViewModel,
-    list: MutableList<Model>,
-    adapter: CustomAdapter,
-    lifecycleScope: LifecycleCoroutineScope
-) {
-    bottomNavigationView.setOnItemSelectedListener { item ->
-        currentTab = item.itemId
-        filterData(financePalViewModel, list, adapter, lifecycleScope)
-        true
-    }
-}
-
-fun filterData(
-    financePalViewModel: FinanceViewModel,
-    list: MutableList<Model>,
-    adapter: CustomAdapter,
-    lifecycleScope: LifecycleCoroutineScope
-) {
-    lifecycleScope.launch {
-        list.clear()
-        when (currentTab) {
-            R.id.item_1 -> loadAllDataFromDatabase(financePalViewModel, list)
-            R.id.item_2 -> loadAllCategoryDataFromDatabase(financePalViewModel, list, "Sent")
-            R.id.item_3 -> loadAllCategoryDataFromDatabase(financePalViewModel, list, "Received")
-        }
-        adapter.notifyDataSetChanged()
-    }
 }
 
 

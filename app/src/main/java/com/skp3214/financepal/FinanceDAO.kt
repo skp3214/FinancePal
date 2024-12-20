@@ -1,5 +1,7 @@
 package com.skp3214.financepal
+import androidx.lifecycle.LiveData
 import androidx.room.*
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface FinanceDAO {
@@ -7,10 +9,10 @@ interface FinanceDAO {
     suspend fun addEntry(entry: Model)
 
     @Query("SELECT * FROM FinancePal")
-    suspend fun getAllEntries(): List<Model>
+    fun getAllEntries(): LiveData<MutableList<Model>>
 
     @Query("SELECT * FROM FinancePal WHERE category = :category")
-    suspend fun getEntriesByCategory(category: String): List<Model>
+    fun getEntriesByCategory(category: String): LiveData<MutableList<Model>>
 
     @Delete
     suspend fun deleteEntry(entry: Model)

@@ -12,7 +12,8 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/iv_large_image_card"
         android:layout_width="335dp"
-        android:layout_height="450dp"
+        android:layout_height="420dp"
+        android:layout_marginTop="16dp"
         app:cardCornerRadius="12dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -26,7 +27,6 @@
             android:scaleType="fitCenter"
             android:src="@drawable/cover" />
     </com.google.android.material.card.MaterialCardView>
-
 
     <!-- Card View with Details Below the Image -->
     <com.google.android.material.card.MaterialCardView
@@ -55,35 +55,22 @@
                 android:layout_marginEnd="8dp"
                 android:text="Name"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                android:textColor="#F8F9FA"
+                android:textColor="#E7D3FA"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
 
             <TextView
                 android:id="@+id/tv_amount"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:text="Amount"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
-                android:textColor="#F8F9FA"
+                android:textColor="#E6EDD7"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_name" />
-
-            <TextView
-                android:id="@+id/tv_description"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="2"
-                android:text="Description"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
-                android:textColor="#F8F9FA"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_amount" />
 
             <TextView
                 android:id="@+id/tv_category"
@@ -92,22 +79,56 @@
                 android:layout_marginTop="8dp"
                 android:text="Category"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-                android:textColor="#F8F9FA"
+                android:textColor="#C4DAF1"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_description" />
+                app:layout_constraintTop_toBottomOf="@id/tv_amount" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_description"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:cardCornerRadius="12dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_category"
+                app:cardBackgroundColor="#FFFFFF">
+
+                <ScrollView
+                    android:id="@+id/scroll_view_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:padding="10dp"
+                    android:scrollbars="vertical"
+                    android:scrollbarAlwaysDrawVerticalTrack="true"
+                    android:fillViewport="true">
+
+                    <TextView
+                        android:id="@+id/tv_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:text="Description goes here..."
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+                        android:textColor="#040A30" />
+                </ScrollView>
+            </com.google.android.material.card.MaterialCardView>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Date and Due Date Section Below the Details Card -->
+    <!-- Date and Due Date Section -->
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/dates_container"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/material_card_view">
+        app:layout_constraintTop_toBottomOf="@id/material_card_view"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="16dp">
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_date"

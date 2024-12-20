@@ -14,16 +14,19 @@ import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -32,14 +35,15 @@ import java.util.Locale
 class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: CustomAdapter
-    private val list = mutableListOf<Model>()
+    private var list = mutableListOf<Model>()
     private lateinit var imageUri: Uri
     private lateinit var imagePickerLauncher: ActivityResultLauncher<String>
     private lateinit var selectedImage: ImageView
-    private lateinit var dbs: FinancePalDatabase
     private lateinit var imageRepository: ImageRepository
-    private lateinit var financePalRepository: FinancePalRepository
-    private lateinit var financePalViewModel: FinanceViewModel
+    private var currentCategory: String? = "All"
+    private val financePalViewModel:FinanceViewModel by viewModels {
+        FinanceViewModel.FinanceViewModelFactory((application as MyApplication).repository)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -51,6 +55,10 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        observeEntryItems()
+        bottomNavigationAndCurrentCategorySetup()
+        showDataWithCurrentCategory()
+
         val toolbar = findViewById<Toolbar>(R.id.topAppBar)
         setSupportActionBar(toolbar)
 
@@ -58,26 +66,12 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         imageRepository = ImageRepository(resources)
-        dbs = DatabaseProvider.getDatabase(this)
-        financePalRepository = FinancePalRepository(dbs.financepalDao())
-        financePalViewModel = FinanceViewModel(financePalRepository)
-
-        loadAllDataFromDatabase(financePalViewModel, list)
 
         adapter = CustomAdapter(list, { model ->
             deleteItem(model)
-            loadAllDataFromDatabase(financePalViewModel, list)
-            adapter.notifyDataSetChanged()
         }, { model ->
             val intent = Intent(this, ItemDetailActivity::class.java)
             intent.putExtra("id", model.id)
-            intent.putExtra("name", model.name)
-            intent.putExtra("amount", model.amount.toString())
-            intent.putExtra("description", model.description)
-            intent.putExtra("category", model.category)
-            intent.putExtra("date", model.date)
-            intent.putExtra("dueDate", model.dueDate)
-            intent.putExtra("image", model.image)
             startActivity(intent)
         })
 
@@ -88,23 +82,8 @@ class MainActivity : AppCompatActivity() {
             showAddItemDialog(null)
         }
 
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
-        filterDataWithCategory(bottomNavigationView, financePalViewModel, list, adapter,lifecycleScope)
-
-        imagePickerLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-            uri?.let {
-                imageUri = it
-                selectedImage.setImageURI(it)
-            }
-        }
-    }
-
-
-    private fun deleteItem(model: Model) {
-        lifecycleScope.launch {
-            financePalViewModel.deleteEntry(model)
-            loadAllDataFromDatabase(financePalViewModel, list)
-        }
+        imagePickerLauncherSetup()
+        leftSwipeDeleteAndUndoFeature()
     }
 
     fun showAddItemDialog(existingModel: Model? = null) {
@@ -185,15 +164,111 @@ class MainActivity : AppCompatActivity() {
                         financePalViewModel.updateEntry(existingModel)
                     } else {
                         val newItem = Model(0, name, amount, description, category,image,date, dueDate)
-                        financePalViewModel.addEntry(newItem)
+                        addItem(newItem)
                     }
-
-                    loadAllDataFromDatabase(financePalViewModel,list)
-                    adapter.notifyDataSetChanged()
                 }
                 dialog.dismiss()
             }
         }
         dialog.show()
+    }
+
+    private fun bottomNavigationAndCurrentCategorySetup() {
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
+        bottomNavigationView.setOnItemSelectedListener { item ->
+            currentCategory = when (item.itemId) {
+                R.id.item_1 -> "All"
+                R.id.item_2 -> "Sent"
+                R.id.item_3 -> "Received"
+                else -> null
+            }
+            showDataWithCurrentCategory()
+            true
+        }
+    }
+
+    private fun showDataWithCurrentCategory() {
+        financePalViewModel.allEntryItems.removeObservers(this)
+        financePalViewModel.getEntriesByCategory("Sent").removeObservers(this)
+        financePalViewModel.getEntriesByCategory("Received").removeObservers(this)
+
+        when (currentCategory) {
+            "All" -> {
+                financePalViewModel.allEntryItems.observe(this) { items ->
+                    updateRecyclerView(items)
+                }
+            }
+            else -> {
+                financePalViewModel.getEntriesByCategory(currentCategory!!).observe(this) { items ->
+                    updateRecyclerView(items)
+                }
+            }
+        }
+    }
+
+    private fun updateRecyclerView(items: List<Model>) {
+        list.clear()
+        list.addAll(items)
+        adapter.notifyDataSetChanged()
+    }
+
+    private fun deleteItem(model: Model) {
+        lifecycleScope.launch {
+            financePalViewModel.deleteEntry(model)
+        }
+    }
+
+    private fun addItem(model:Model){
+        lifecycleScope.launch {
+            financePalViewModel.addEntry(model)
+        }
+    }
+
+    private fun observeEntryItems() {
+        financePalViewModel.allEntryItems.observe(this) { entryItems ->
+            entryItems?.let {
+                updateRecyclerView(it)
+            }
+        }
+    }
+
+    private fun leftSwipeDeleteAndUndoFeature(){
+        val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.layoutPosition
+                val deletedModel = list[position]
+                deleteItem(deletedModel)
+                adapter.notifyItemRemoved(position)
+
+                Snackbar.make(
+                    recyclerView,
+                    "Item deleted",
+                    Snackbar.LENGTH_LONG
+                ).setAction("Undo") {
+                    addItem(deletedModel)
+                    adapter.notifyDataSetChanged()
+                }.show()
+            }
+        }
+
+        val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
+        itemTouchHelper.attachToRecyclerView(recyclerView)
+    }
+
+    private fun imagePickerLauncherSetup(){
+        imagePickerLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            uri?.let {
+                imageUri = it
+                selectedImage.setImageURI(it)
+            }
+        }
     }
 }

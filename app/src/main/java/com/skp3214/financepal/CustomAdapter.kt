@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-
 class CustomAdapter(
     private val models: MutableList<Model>,
     private val onDelete: (Model) -> Unit,
@@ -32,10 +31,11 @@ class CustomAdapter(
         val model = models[position]
 
         holder.nameTextView.text = model.name
-        ("Amount: " + model.amount.toFixed(2)).also { holder.amountTextView.text = it }
+        "Amount: ${model.amount.toFixed(2)}".also { holder.amountTextView.text = it }
         holder.descriptionTextView.text = model.description
         "Date: ${model.date}".also { holder.dateTextView.text = it }
         "Due Date: ${model.dueDate}".also { holder.dueDateTextView.text = it }
+
         val imageRepository = ImageRepository(holder.itemView.resources)
         holder.imageView.setImageBitmap(imageRepository.byteArrayToBitmap(model.image))
 
@@ -50,4 +50,5 @@ class CustomAdapter(
     override fun getItemCount(): Int = models.size
 
     private fun Double.toFixed(numDigits: Int): String = String.format("%.${numDigits}f", this)
+
 }

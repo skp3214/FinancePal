@@ -1,40 +1,43 @@
 package com.skp3214.financepal
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
 class FinanceViewModel(private val repository: FinancePalRepository) : ViewModel() {
 
-    fun addEntry(entry: Model) {
-        viewModelScope.launch {
-            repository.addEntry(entry)
+    private val categoryLiveDataMap = mutableMapOf<String, LiveData<MutableList<Model>>>()
+
+    val allEntryItems: LiveData<MutableList<Model>> = repository.allEntries
+
+    fun getEntriesByCategory(category: String): LiveData<MutableList<Model>> {
+        return categoryLiveDataMap.getOrPut(category) {
+            repository.getEntriesByCategory(category)
         }
     }
 
-    fun getAllEntries(callback: (List<Model>) -> Unit) {
-        viewModelScope.launch {
-            val entries = repository.getAllEntries()
-            callback(entries)
-        }
+    fun addEntry(entry: Model) = viewModelScope.launch {
+        repository.addEntry(entry)
     }
 
-    fun getEntriesByCategory(category: String, callback: (List<Model>) -> Unit) {
-        viewModelScope.launch {
-            val entries = repository.getEntriesByCategory(category)
-            callback(entries)
-        }
+    fun deleteEntry(entry: Model) = viewModelScope.launch {
+        repository.deleteEntry(entry)
     }
 
-    fun deleteEntry(entry: Model) {
-        viewModelScope.launch {
-            repository.deleteEntry(entry)
-        }
+    fun updateEntry(entry: Model) = viewModelScope.launch {
+        repository.updateEntry(entry)
     }
 
-    fun updateEntry(entry: Model) {
-        viewModelScope.launch {
-            repository.updateEntry(entry)
+    class FinanceViewModelFactory(private val repository: FinancePalRepository) : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(FinanceViewModel::class.java)) {
+                @Suppress("UNCHECKED_CAST")
+                return FinanceViewModel(repository) as T
+            }
+            throw IllegalArgumentException("Unknown ViewModel class")
         }
     }
 }
+
