@@ -1,6 +1,8 @@
-package com.skp3214.financepal
+package com.skp3214.financepal.repository
 
 import androidx.lifecycle.LiveData
+import com.skp3214.financepal.dao.FinanceDAO
+import com.skp3214.financepal.model.Model
 
 class FinancePalRepository(private val financepalDao: FinanceDAO) {
 

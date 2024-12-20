@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:id="@+id/item_detail"
     android:background="#121212"
-    tools:context=".ItemDetailActivity">
+    tools:context=".view.ItemDetailActivity">
 
     <!-- Large Image at the Top -->
     <com.google.android.material.card.MaterialCardView

@@ -1,4 +1,4 @@
-package com.skp3214.financepal
+package com.skp3214.financepal.database
 
 import android.content.Context
 import androidx.room.Room

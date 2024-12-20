@@ -1,4 +1,4 @@
-package com.skp3214.financepal
+package com.skp3214.financepal.utils
 
 import android.content.res.Resources
 import android.graphics.Bitmap

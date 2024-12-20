@@ -1,4 +1,4 @@
-package com.skp3214.financepal
+package com.skp3214.financepal.customadapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,6 +6,12 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.skp3214.financepal.utils.ImageRepository
+import com.skp3214.financepal.R
+import com.skp3214.financepal.model.Model
+import com.skp3214.financepal.utils.setupDeadlineBar
+import com.skp3214.financepal.utils.showMenuIcon
+
 class CustomAdapter(
     private val models: MutableList<Model>,
     private val onDelete: (Model) -> Unit,

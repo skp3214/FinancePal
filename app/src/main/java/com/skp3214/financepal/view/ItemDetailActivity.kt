@@ -1,4 +1,4 @@
-package com.skp3214.financepal
+package com.skp3214.financepal.view
 
 import android.os.Bundle
 import android.widget.ImageView
@@ -9,11 +9,15 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
+import com.skp3214.financepal.utils.ImageRepository
+import com.skp3214.financepal.MyApplication
+import com.skp3214.financepal.R
+import com.skp3214.financepal.viewmodel.FinanceViewModel
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
 class ItemDetailActivity : AppCompatActivity() {
-    private val financePalViewModel:FinanceViewModel by viewModels {
+    private val financePalViewModel: FinanceViewModel by viewModels {
         FinanceViewModel.FinanceViewModelFactory((application as MyApplication).repository)
     }
     override fun onCreate(savedInstanceState: Bundle?) {

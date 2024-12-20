@@ -14,7 +14,7 @@
         android:theme="@style/Theme.FinancePal"
         tools:targetApi="31">
         <activity
-            android:name=".ItemDetailActivity"
+            android:name=".view.ItemDetailActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

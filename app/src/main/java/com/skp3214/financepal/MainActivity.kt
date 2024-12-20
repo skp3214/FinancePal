@@ -27,6 +27,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import com.skp3214.financepal.customadapters.CustomAdapter
+import com.skp3214.financepal.model.Model
+import com.skp3214.financepal.utils.ImageRepository
+import com.skp3214.financepal.utils.getCategoryPosition
+import com.skp3214.financepal.view.ItemDetailActivity
+import com.skp3214.financepal.viewmodel.FinanceViewModel
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -41,7 +47,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var selectedImage: ImageView
     private lateinit var imageRepository: ImageRepository
     private var currentCategory: String? = "All"
-    private val financePalViewModel:FinanceViewModel by viewModels {
+    private val financePalViewModel: FinanceViewModel by viewModels {
         FinanceViewModel.FinanceViewModelFactory((application as MyApplication).repository)
     }
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -218,7 +224,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun addItem(model:Model){
+    private fun addItem(model: Model){
         lifecycleScope.launch {
             financePalViewModel.addEntry(model)
         }

@@ -1,9 +1,11 @@
-package com.skp3214.financepal
+package com.skp3214.financepal.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.skp3214.financepal.model.Model
+import com.skp3214.financepal.repository.FinancePalRepository
 import kotlinx.coroutines.launch
 
 class FinanceViewModel(private val repository: FinancePalRepository) : ViewModel() {

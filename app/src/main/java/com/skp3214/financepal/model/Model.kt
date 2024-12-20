@@ -1,4 +1,4 @@
-package com.skp3214.financepal
+package com.skp3214.financepal.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

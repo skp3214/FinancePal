@@ -1,7 +1,7 @@
-package com.skp3214.financepal
+package com.skp3214.financepal.dao
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import kotlinx.coroutines.flow.Flow
+import com.skp3214.financepal.model.Model
 
 @Dao
 interface FinanceDAO {
