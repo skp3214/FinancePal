@@ -1,7 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.kapt) // Ensure this is added
+    alias(libs.plugins.ksp)
+
 }
 
 android {
@@ -17,6 +18,11 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+
+    buildFeatures {
+        viewBinding = true
+    }
+
 
     buildTypes {
         release {
@@ -38,7 +44,7 @@ android {
 
 dependencies {
     implementation(libs.androidx.room.runtime)
-    kapt("androidx.room:room-compiler:2.6.1") // Correct placement of kapt
+    ksp(libs.androidx.room.compiler) // Add this line
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.appcompat)

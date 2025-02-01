@@ -6,9 +6,9 @@ import com.skp3214.financepal.model.Model
 
 class FinancePalRepository(private val financepalDao: FinanceDAO) {
 
-    val allEntries: LiveData<MutableList<Model>> = financepalDao.getAllEntries()
+    val allEntries: LiveData<List<Model>> = financepalDao.getAllEntries()
 
-    fun getEntriesByCategory(category: String): LiveData<MutableList<Model>> {
+    fun getEntriesByCategory(category: String): LiveData<List<Model>> {
         return financepalDao.getEntriesByCategory(category)
     }
 

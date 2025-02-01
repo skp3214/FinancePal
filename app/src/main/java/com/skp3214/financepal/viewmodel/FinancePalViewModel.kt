@@ -10,11 +10,11 @@ import kotlinx.coroutines.launch
 
 class FinanceViewModel(private val repository: FinancePalRepository) : ViewModel() {
 
-    private val categoryLiveDataMap = mutableMapOf<String, LiveData<MutableList<Model>>>()
+    private val categoryLiveDataMap = mutableMapOf<String, LiveData<List<Model>>>()
 
-    val allEntryItems: LiveData<MutableList<Model>> = repository.allEntries
+    val allEntryItems: LiveData<List<Model>> = repository.allEntries
 
-    fun getEntriesByCategory(category: String): LiveData<MutableList<Model>> {
+    fun getEntriesByCategory(category: String): LiveData<List<Model>> {
         return categoryLiveDataMap.getOrPut(category) {
             repository.getEntriesByCategory(category)
         }

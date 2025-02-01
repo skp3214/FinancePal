@@ -9,10 +9,10 @@ interface FinanceDAO {
     suspend fun addEntry(entry: Model)
 
     @Query("SELECT * FROM FinancePal")
-    fun getAllEntries(): LiveData<MutableList<Model>>
+    fun getAllEntries(): LiveData<List<Model>>
 
     @Query("SELECT * FROM FinancePal WHERE category = :category")
-    fun getEntriesByCategory(category: String): LiveData<MutableList<Model>>
+    fun getEntriesByCategory(category: String): LiveData<List<Model>>
 
     @Delete
     suspend fun deleteEntry(entry: Model)

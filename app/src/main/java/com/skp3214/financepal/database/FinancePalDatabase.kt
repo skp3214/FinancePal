@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import com.skp3214.financepal.dao.FinanceDAO
 import com.skp3214.financepal.model.Model
 
-@Database(entities = [Model::class], version = 1)
+@Database(entities = [Model::class], version = 1, exportSchema = false)
 abstract class FinancePalDatabase : RoomDatabase() {
     abstract fun financepalDao(): FinanceDAO
 }
