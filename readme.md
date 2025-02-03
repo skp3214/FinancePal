@@ -38,8 +38,9 @@ FinancePal is an Android app designed to simplify personal finance management. ð
 ---
 
 ## ðŸ“± Screenshots  
+![4](https://github.com/user-attachments/assets/caaca43a-8a9f-4f37-bd82-1ce45ef57b6b)
 
-
+![5](https://github.com/user-attachments/assets/3ffa1607-4c07-42a6-a85e-4292d5ddf55e)
 
 ---
 
