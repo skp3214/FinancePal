@@ -1,14 +1,22 @@
 package com.skp3214.financepal
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
@@ -24,14 +32,21 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.skp3214.financepal.customadapters.CustomAdapter
 import com.skp3214.financepal.model.Model
+import com.skp3214.financepal.auth.EmailPasswordFirebaseAuth
+import com.skp3214.financepal.auth.GoogleSignInAuth
 import com.skp3214.financepal.utils.ImageRepository
 import com.skp3214.financepal.utils.getCategoryPosition
 import com.skp3214.financepal.view.ItemDetailActivity
+import com.skp3214.financepal.view.LoginActivity
+import com.skp3214.financepal.view.UserProfileActivity
 import com.skp3214.financepal.viewmodel.FinanceViewModel
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -46,10 +61,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var imagePickerLauncher: ActivityResultLauncher<String>
     private lateinit var selectedImage: ImageView
     private lateinit var imageRepository: ImageRepository
+    private lateinit var googleSignInAuth: GoogleSignInAuth
     private var currentCategory: String? = "All"
     private val financePalViewModel: FinanceViewModel by viewModels {
         FinanceViewModel.FinanceViewModelFactory((application as MyApplication).repository)
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -59,6 +76,26 @@ class MainActivity : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
+        }
+
+
+        val firebase= EmailPasswordFirebaseAuth()
+        if(!firebase.isLoggedIn()){
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
+        googleSignInAuth = GoogleSignInAuth(this)
+
+        val progressBar = findViewById<ProgressBar>(R.id.progressBar)
+
+        financePalViewModel.isLoading.observe(this) { isLoading ->
+            if (isLoading) {
+                progressBar.visibility = View.VISIBLE
+            } else {
+                progressBar.visibility = View.GONE
+            }
         }
 
         observeEntryItems()
@@ -80,6 +117,7 @@ class MainActivity : AppCompatActivity() {
             intent.putExtra("id", model.id)
             startActivity(intent)
         })
+
 
         recyclerView.adapter = adapter
 
@@ -169,7 +207,7 @@ class MainActivity : AppCompatActivity() {
                         }
                         financePalViewModel.updateEntry(existingModel)
                     } else {
-                        val newItem = Model(0, name, amount, description, category,image,date, dueDate)
+                        val newItem = Model("", name, amount, description, category,image,date, dueDate,"")
                         addItem(newItem)
                     }
                 }
@@ -212,6 +250,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun updateRecyclerView(items: List<Model>) {
         list.clear()
         list.addAll(items)
@@ -248,6 +287,7 @@ class MainActivity : AppCompatActivity() {
                 return false
             }
 
+            @SuppressLint("NotifyDataSetChanged")
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.layoutPosition
                 val deletedModel = list[position]
@@ -275,6 +315,39 @@ class MainActivity : AppCompatActivity() {
                 imageUri = it
                 selectedImage.setImageURI(it)
             }
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.top_app_bar_profile, menu)
+        val user = EmailPasswordFirebaseAuth().getCurrentUser()
+        user?.photoUrl?.let { photoUrl ->
+            val menuItem = menu?.findItem(R.id.action_profile)
+            Glide.with(this)
+                .asBitmap()
+                .load(photoUrl)
+                .placeholder(R.drawable.baseline_account_circle_24)
+                .circleCrop()
+                .into(object : CustomTarget<Bitmap>() {
+                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                        menuItem?.icon = BitmapDrawable(resources, resource)
+                    }
+
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                        menuItem?.icon = placeholder
+                    }
+                })
+        }
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_profile -> {
+                startActivity(Intent(this, UserProfileActivity::class.java))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 }

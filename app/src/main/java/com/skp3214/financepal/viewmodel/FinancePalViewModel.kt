@@ -1,35 +1,77 @@
 package com.skp3214.financepal.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.skp3214.financepal.model.Model
 import com.skp3214.financepal.repository.FinancePalRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class FinanceViewModel(private val repository: FinancePalRepository) : ViewModel() {
 
-    private val categoryLiveDataMap = mutableMapOf<String, LiveData<MutableList<Model>>>()
+    private val _allEntryItems = MutableLiveData<List<Model>>()
+    val allEntryItems: LiveData<List<Model>> get() = _allEntryItems
 
-    val allEntryItems: LiveData<MutableList<Model>> = repository.allEntries
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> get() = _isLoading
 
-    fun getEntriesByCategory(category: String): LiveData<MutableList<Model>> {
-        return categoryLiveDataMap.getOrPut(category) {
-            repository.getEntriesByCategory(category)
+//    private val categoryLiveDataMap = mutableMapOf<String, MutableLiveData<List<Model>>>()
+
+    init {
+        _isLoading.value = true
+        fetchAllEntries()
+    }
+
+    private fun fetchAllEntries() = viewModelScope.launch {
+        val entries = withContext(Dispatchers.IO) {
+            repository.getAllEntries()
         }
+        _allEntryItems.value = entries
+        _isLoading.value = false
+    }
+
+    fun getEntriesByCategory(category: String): LiveData<List<Model>> {
+        val filteredLiveData = MutableLiveData<List<Model>>()
+        _isLoading.value = true
+        viewModelScope.launch {
+            val allEntries = _allEntryItems.value ?: emptyList()
+            val filteredEntries = allEntries.filter { it.category == category }
+            filteredLiveData.value = filteredEntries
+            _isLoading.value = false
+        }
+        return filteredLiveData
     }
 
     fun addEntry(entry: Model) = viewModelScope.launch {
+        _isLoading.value = true
         repository.addEntry(entry)
+        fetchAllEntries()
+        _isLoading.value = false
     }
 
     fun deleteEntry(entry: Model) = viewModelScope.launch {
+        _isLoading.value = true
         repository.deleteEntry(entry)
+        fetchAllEntries()
+        _isLoading.value = false
     }
 
     fun updateEntry(entry: Model) = viewModelScope.launch {
+        _isLoading.value = true
         repository.updateEntry(entry)
+        fetchAllEntries()
+        _isLoading.value = false
+    }
+
+    fun getEntryById(id: String): LiveData<Model?> {
+        val entryLiveData = MutableLiveData<Model?>()
+        _isLoading.value = true
+        _allEntryItems.observeForever { allEntries ->
+            val entry = allEntries.find { it.id == id }
+            entryLiveData.value = entry
+            _isLoading.value = false
+        }
+        return entryLiveData
     }
 
     class FinanceViewModelFactory(private val repository: FinancePalRepository) : ViewModelProvider.Factory {
@@ -42,4 +84,3 @@ class FinanceViewModel(private val repository: FinancePalRepository) : ViewModel
         }
     }
 }
-

@@ -16,7 +16,8 @@
         android:title="FinancePal"
         android:titleTextColor="?attr/colorOnPrimaryContainer"
         app:titleCentered="false"
-         />
+        app:menu="@menu/top_app_bar_profile" />
+
 
     <!-- RecyclerView positioned below the TopAppBar -->
     <androidx.recyclerview.widget.RecyclerView
@@ -25,6 +26,14 @@
         android:layout_height="0dp"
         android:layout_below="@id/topAppBar"
         android:layout_above="@id/bottom_navigation" />
+
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
 
     <!-- Floating Action Button positioned above the BottomNavigationView -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton

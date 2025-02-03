@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.skp3214.financepal" />
+                  <option name="mobileSdkAppId" value="1:12357921490:android:91c7dcd92dbfc54cb51b0b" />
+                  <option name="projectId" value="financepal-skp3214" />
+                  <option name="projectNumber" value="12357921490" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

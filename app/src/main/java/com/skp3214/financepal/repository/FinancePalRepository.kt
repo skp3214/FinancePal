@@ -1,26 +1,32 @@
 package com.skp3214.financepal.repository
 
-import androidx.lifecycle.LiveData
-import com.skp3214.financepal.dao.FinanceDAO
 import com.skp3214.financepal.model.Model
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-class FinancePalRepository(private val financepalDao: FinanceDAO) {
+class FinancePalRepository(private val firebaseDB: FirebaseRepository) {
 
-    val allEntries: LiveData<MutableList<Model>> = financepalDao.getAllEntries()
-
-    fun getEntriesByCategory(category: String): LiveData<MutableList<Model>> {
-        return financepalDao.getEntriesByCategory(category)
+    suspend fun getAllEntries(): List<Model> = withContext(Dispatchers.IO) {
+        firebaseDB.getAllTransactions()
     }
 
+//    suspend fun getEntriesByCategory(category: String): List<Model> {
+//        return firebaseDB.getTransactionsByCategory(category)
+//    }
+
     suspend fun addEntry(entry: Model) {
-        financepalDao.addEntry(entry)
+        firebaseDB.addTransaction(entry)
     }
 
     suspend fun deleteEntry(entry: Model) {
-        financepalDao.deleteEntry(entry)
+        firebaseDB.deleteTransaction(entry.id)
     }
 
     suspend fun updateEntry(entry: Model) {
-        financepalDao.updateEntry(entry)
+        firebaseDB.updateTransaction(entry.id, entry)
     }
+
+//    suspend fun getEntryById(id: String): Model? {
+//        return firebaseDB.getTransaction(id)
+//    }
 }
