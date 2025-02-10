@@ -7,7 +7,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.skp3214.financepal.utils.ImageRepository
+import com.bumptech.glide.Glide
 import com.skp3214.financepal.MyApplication
 import com.skp3214.financepal.R
 import com.skp3214.financepal.viewmodel.FinanceViewModel
@@ -31,11 +31,12 @@ class ItemDetailActivity : AppCompatActivity() {
 
         financePalViewModel.getEntryById(id).observe(this) { entry ->
             entry?.let {
-                val imageRepository = ImageRepository(resources)
+                val imageView = findViewById<ImageView>(R.id.iv_large_image)
+                Glide.with(this)
+                    .load(entry.image)
+                    .placeholder(R.drawable.loading)
+                    .into(imageView)
 
-                findViewById<ImageView>(R.id.iv_large_image).setImageBitmap(
-                    entry.image.let { imageRepository.byteArrayToBitmap(it) }
-                )
                 findViewById<android.widget.TextView>(R.id.tv_name).text = entry.name
                 "Amount: ${entry.amount}".also { findViewById<android.widget.TextView>(R.id.tv_amount).text = it }
                 findViewById<android.widget.TextView>(R.id.tv_description).text = entry.description

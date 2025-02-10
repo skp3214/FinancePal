@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.skp3214.financepal.utils.ImageRepository
+import com.bumptech.glide.Glide
 import com.skp3214.financepal.R
 import com.skp3214.financepal.model.Model
 import com.skp3214.financepal.utils.setupDeadlineBar
@@ -42,8 +42,10 @@ class CustomAdapter(
         "Date: ${model.date}".also { holder.dateTextView.text = it }
         "Due Date: ${model.dueDate}".also { holder.dueDateTextView.text = it }
 
-        val imageRepository = ImageRepository(holder.itemView.resources)
-        holder.imageView.setImageBitmap(imageRepository.byteArrayToBitmap(model.image))
+        Glide.with(holder.itemView.context)
+            .load(model.image)
+            .placeholder(R.drawable.loading)
+            .into(holder.imageView)
 
         holder.itemView.setOnClickListener { onItemClicked(model) }
 

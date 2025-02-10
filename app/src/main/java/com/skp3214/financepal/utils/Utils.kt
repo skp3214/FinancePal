@@ -70,7 +70,8 @@ fun showMenuIcon(holder: CustomAdapter.ModelViewHolder, menuIcon: ImageView, mod
                 }
                 R.id.action_edit -> {
                     (holder.itemView.context as MainActivity).showAddItemDialog(
-                        existingModel = model
+                        existingModel = model,
+                        firebaseRepository = (holder.itemView.context as MainActivity).firebaseRepository
                     )
                     true
                 }

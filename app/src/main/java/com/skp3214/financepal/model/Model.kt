@@ -6,7 +6,7 @@ data class Model(
     var amount: Double,
     var description: String,
     var category: String,
-    var image: ByteArray,
+    var image: String,
     var date: String,
     var dueDate: String,
     var userId: String

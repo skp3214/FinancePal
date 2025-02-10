@@ -17,7 +17,6 @@ class FirebaseRepository {
     suspend fun addTransaction(model: Model) {
         try {
             val currentUser = auth.currentUser ?: return
-            val imageUrl = uploadImage(model.image)
             val docId = transactionsCollection.document().id
             val transaction = hashMapOf(
                 "id" to docId,
@@ -26,7 +25,7 @@ class FirebaseRepository {
                 "amount" to model.amount,
                 "description" to model.description,
                 "category" to model.category,
-                "imageUrl" to imageUrl,
+                "imageUrl" to model.image,
                 "date" to model.date,
                 "dueDate" to model.dueDate
             )
@@ -45,7 +44,6 @@ class FirebaseRepository {
 
             snapshot.documents.mapNotNull { document ->
                 val imageUrl = document.getString("imageUrl") ?: ""
-                val imageBytes = downloadImage(imageUrl)
 
                 Model(
                     id = document.getString("id") ?: "",
@@ -53,7 +51,7 @@ class FirebaseRepository {
                     amount = document.getDouble("amount") ?: 0.0,
                     description = document.getString("description") ?: "",
                     category = document.getString("category") ?: "",
-                    image = imageBytes,
+                    image = imageUrl,
                     date = document.getString("date") ?: "",
                     dueDate = document.getString("dueDate") ?: "",
                     userId = document.getString("userId") ?: ""
@@ -73,7 +71,6 @@ class FirebaseRepository {
             val document = transactionsCollection.document(id).get().await()
 
             if (document.exists() && document.getString("userId") == currentUser.uid) {
-                val imageUrl = uploadImage(model.image)
                 val updateData = hashMapOf(
                     "id" to model.id,
                     "userId" to currentUser.uid,
@@ -81,7 +78,7 @@ class FirebaseRepository {
                     "amount" to model.amount,
                     "description" to model.description,
                     "category" to model.category,
-                    "imageUrl" to imageUrl,
+                    "imageUrl" to model.image,
                     "date" to model.date,
                     "dueDate" to model.dueDate
                 )
@@ -177,17 +174,9 @@ class FirebaseRepository {
 //            return null
 //        }
 //    }
-    private suspend fun uploadImage(imageBytes: ByteArray): String {
+    suspend fun uploadImage(imageBytes: ByteArray): String {
         val imageRef = storageRef.child("images/${UUID.randomUUID()}.jpg")
         return imageRef.putBytes(imageBytes).await().storage.downloadUrl.await().toString()
     }
 
-    private suspend fun downloadImage(imageUrl: String): ByteArray {
-        return try {
-            val maxDownloadSize = 5L * 1024 * 1024
-            storage.getReferenceFromUrl(imageUrl).getBytes(maxDownloadSize).await()
-        } catch (e: Exception) {
-            ByteArray(0)
-        }
-    }
 }

@@ -42,6 +42,7 @@ import com.skp3214.financepal.customadapters.CustomAdapter
 import com.skp3214.financepal.model.Model
 import com.skp3214.financepal.auth.EmailPasswordFirebaseAuth
 import com.skp3214.financepal.auth.GoogleSignInAuth
+import com.skp3214.financepal.repository.FirebaseRepository
 import com.skp3214.financepal.utils.ImageRepository
 import com.skp3214.financepal.utils.getCategoryPosition
 import com.skp3214.financepal.view.ItemDetailActivity
@@ -62,6 +63,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var selectedImage: ImageView
     private lateinit var imageRepository: ImageRepository
     private lateinit var googleSignInAuth: GoogleSignInAuth
+    lateinit var firebaseRepository: FirebaseRepository
     private var currentCategory: String? = "All"
     private val financePalViewModel: FinanceViewModel by viewModels {
         FinanceViewModel.FinanceViewModelFactory((application as MyApplication).repository)
@@ -85,7 +87,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
-
+        firebaseRepository = FirebaseRepository()
         googleSignInAuth = GoogleSignInAuth(this)
 
         val progressBar = findViewById<ProgressBar>(R.id.progressBar)
@@ -123,14 +125,14 @@ class MainActivity : AppCompatActivity() {
 
         val fab = findViewById<FloatingActionButton>(R.id.fab)
         fab.setOnClickListener {
-            showAddItemDialog(null)
+            showAddItemDialog(null,firebaseRepository)
         }
 
         imagePickerLauncherSetup()
         leftSwipeDeleteAndUndoFeature()
     }
 
-    fun showAddItemDialog(existingModel: Model? = null) {
+    fun showAddItemDialog(existingModel: Model? = null, firebaseRepository: FirebaseRepository) {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialogue_form, null)
         val etName = dialogView.findViewById<EditText>(R.id.et_name)
         val etAmount = dialogView.findViewById<EditText>(R.id.et_amount)
@@ -142,17 +144,8 @@ class MainActivity : AppCompatActivity() {
         val btnSelect = dialogView.findViewById<Button>(R.id.select)
         val btnSave = dialogView.findViewById<TextView>(R.id.btn_save)
 
-        val dateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        fun showDatePicker(textView: TextView) {
-            val calendar = Calendar.getInstance()
-            DatePickerDialog(this, { _, year, month, dayOfMonth ->
-                calendar.set(year, month, dayOfMonth)
-                textView.text = dateFormatter.format(calendar.time)
-            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show()
-        }
-
-        tvDate.setOnClickListener { showDatePicker(tvDate) }
-        tvDueDate.setOnClickListener { showDatePicker(tvDueDate) }
+        tvDate.setOnClickListener { showDatePicker(tvDate,"date") }
+        tvDueDate.setOnClickListener { showDatePicker(tvDueDate,"duedate") }
 
         btnSelect.setOnClickListener {
             imagePickerLauncher.launch("image/*")
@@ -165,7 +158,10 @@ class MainActivity : AppCompatActivity() {
             tvDate.text = it.date
             tvDueDate.text = it.dueDate
             spinnerCategory.setSelection(getCategoryPosition(it.category, resources))
-            selectedImage.setImageBitmap(imageRepository.byteArrayToBitmap(it.image))
+            Glide.with(this)
+                .load(existingModel.image)
+                .placeholder(R.drawable.loading)
+                .into(selectedImage)
         }
 
         val dialog = AlertDialog.Builder(this)
@@ -193,8 +189,9 @@ class MainActivity : AppCompatActivity() {
                 if (selectedImage.drawable == null) {
                     selectedImage.setImageResource(R.drawable.nossuploaded)
                 }
-                val image = imageRepository.bitmapToByteArray(selectedImage.drawable.toBitmap())
                 lifecycleScope.launch {
+                val imageByteArray=imageRepository.bitmapToByteArray(selectedImage.drawable.toBitmap())
+                val image = firebaseRepository.uploadImage(imageByteArray)
                     if (existingModel != null) {
                         existingModel.apply {
                             this.name = name
@@ -349,5 +346,25 @@ class MainActivity : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+
+    private fun showDatePicker(textView: TextView, type: String) {
+        val dateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val calendar = Calendar.getInstance()
+        val today = Calendar.getInstance()
+
+        DatePickerDialog(this, { _, year, month, dayOfMonth ->
+            calendar.set(year, month, dayOfMonth)
+            if ((type == "duedate") && calendar.before(today)) {
+                AlertDialog.Builder(this)
+                    .setTitle("Invalid Date")
+                    .setMessage("Due date cannot be in the past.")
+                    .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
+                    .show()
+            } else {
+                textView.text = dateFormatter.format(calendar.time)
+            }
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show()
     }
 }
