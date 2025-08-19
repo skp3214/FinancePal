@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.skp3214.financepal"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.skp3214.financepal"
@@ -60,5 +60,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.kotlinx.coroutines.android)
     implementation (libs.glide)
+    implementation(libs.gms.play.services.auth)
     annotationProcessor (libs.compiler)
 }

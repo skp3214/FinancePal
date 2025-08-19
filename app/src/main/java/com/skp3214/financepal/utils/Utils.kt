@@ -53,7 +53,7 @@ fun setupDeadlineBar(view: View, startDate: String, dueDate: String) {
         view.foreground = clipDrawable
         clipDrawable.level = (progress * 100).toInt()
 
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         view.setBackgroundColor(Color.LTGRAY)
     }
 }

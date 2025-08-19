@@ -125,14 +125,14 @@
         <!-- Google Sign-In Button -->
         <ImageButton
             android:id="@+id/btn_google_signin"
+            style="@style/Widget.Material3.Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:contentDescription="@string/app_name"
             android:paddingStart="16dp"
-            style="@style/Widget.Material3.Button"
             android:src="@drawable/signin"
-            android:textAlignment="viewStart"
-            />
+            android:textAlignment="viewStart" />
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
