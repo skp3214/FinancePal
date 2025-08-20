@@ -2,10 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/item_detail"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/item_detail"
-    android:background="#121212"
+    android:background="?attr/colorOnPrimary"
     tools:context=".view.ItemDetailActivity">
 
     <!-- Large Image at the Top -->
@@ -15,6 +15,7 @@
         android:layout_height="420dp"
         android:layout_marginTop="16dp"
         app:cardCornerRadius="12dp"
+        app:cardBackgroundColor="?attr/colorPrimary"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -23,7 +24,7 @@
             android:id="@+id/iv_large_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:contentDescription="Large Image"
+            android:contentDescription="content_desc_large_image"
             android:scaleType="fitCenter"
             android:src="@drawable/loading" />
     </com.google.android.material.card.MaterialCardView>
@@ -35,14 +36,14 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginHorizontal="16dp"
-        app:cardBackgroundColor="#212529"
+        app:cardBackgroundColor="?attr/colorOnPrimary"
         app:cardCornerRadius="12dp"
         app:cardElevation="8dp"
         app:layout_constraintTop_toBottomOf="@id/iv_large_image_card"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Inner Layout for Name, Amount, Description, and Options Icon -->
+        <!-- Inner Layout -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -53,9 +54,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                android:text="Loading..."
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                android:textColor="#E7D3FA"
+                android:text="loading"
+                android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+                android:textColor="?attr/colorPrimary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -65,9 +66,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Loading..."
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
-                android:textColor="#E6EDD7"
+                android:text="loading"
+                android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                android:textColor="?attr/colorPrimary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_name" />
@@ -77,9 +78,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Loading..."
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-                android:textColor="#C4DAF1"
+                android:text="loading"
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                android:textColor="?attr/colorPrimary"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_amount" />
@@ -90,10 +91,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 app:cardCornerRadius="12dp"
+                app:cardBackgroundColor="?attr/colorPrimary"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_category"
-                app:cardBackgroundColor="#FFFFFF">
+                app:layout_constraintTop_toBottomOf="@id/tv_category">
 
                 <ScrollView
                     android:id="@+id/scroll_view_description"
@@ -107,10 +108,10 @@
                     <TextView
                         android:id="@+id/tv_description"
                         android:layout_width="match_parent"
-                        android:layout_height="200dp"
-                        android:text="Loading..."
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
-                        android:textColor="#040A30" />
+                        android:layout_height="wrap_content"
+                        android:text="loading"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                        android:textColor="?attr/colorOnPrimary" />
                 </ScrollView>
             </com.google.android.material.card.MaterialCardView>
 
@@ -124,52 +125,52 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="24dp"
+        android:layout_marginBottom="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/material_card_view"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="16dp">
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:cardBackgroundColor="#343A40"
+            app:cardBackgroundColor="?attr/colorPrimary"
             app:cardCornerRadius="8dp"
+            app:strokeColor="?attr/colorPrimary"
+            app:strokeWidth="2dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:strokeColor="#E0E0E0"
-            app:strokeWidth="1dp">
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:id="@+id/tv_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
-                android:text="Loading..."
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-                android:textColor="#F8F9FA" />
+                android:text="loading"
+                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                android:textColor="?attr/colorOnPrimary" />
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_due_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:cardBackgroundColor="#343A40"
+            app:cardBackgroundColor="?attr/colorPrimary"
             app:cardCornerRadius="8dp"
+            app:strokeColor="?attr/colorPrimary"
+            app:strokeWidth="2dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:strokeColor="#E0E0E0"
-            app:strokeWidth="1dp">
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:id="@+id/tv_due_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
-                android:text="Loading..."
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-                android:textColor="#F8F9FA" />
+                android:text="loading"
+                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                android:textColor="?attr/colorOnPrimary" />
         </com.google.android.material.card.MaterialCardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:background="?attr/colorOnPrimary"
         android:padding="24dp">
 
         <!-- Name Input -->
@@ -82,7 +83,7 @@
                 android:background="?attr/selectableItemBackground"
                 android:textAppearance="?attr/textAppearanceBodyLarge"
                 android:text="Select Due Date"
-            android:textColorHint="?attr/colorOnSurfaceVariant" />
+            android:textColorHint="?attr/colorOnPrimary" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Category Dropdown with Outline -->
