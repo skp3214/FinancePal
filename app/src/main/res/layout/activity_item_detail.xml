@@ -5,7 +5,7 @@
     android:id="@+id/item_detail"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorOnPrimary"
+    android:background="?attr/colorSurface"
     tools:context=".view.ItemDetailActivity">
 
     <!-- Large Image at the Top -->

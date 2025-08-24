@@ -5,7 +5,6 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
@@ -53,6 +52,7 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import androidx.core.graphics.drawable.toDrawable
 
 class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
@@ -327,7 +327,7 @@ class MainActivity : AppCompatActivity() {
                 .circleCrop()
                 .into(object : CustomTarget<Bitmap>() {
                     override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                        menuItem?.icon = BitmapDrawable(resources, resource)
+                        menuItem?.icon = resource.toDrawable(resources)
                     }
 
                     override fun onLoadCleared(placeholder: Drawable?) {

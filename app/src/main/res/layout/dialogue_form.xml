@@ -22,7 +22,9 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_name"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:textColor="?attr/colorPrimary"
+                />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Amount Input -->
@@ -36,6 +38,7 @@
                 android:id="@+id/et_amount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="?attr/colorPrimary"
                 android:inputType="numberDecimal" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -49,7 +52,9 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_description"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:textColor="?attr/colorPrimary"
+                />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Select Date with Placeholder and Outline -->
@@ -63,7 +68,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="12dp"
-                android:background="?attr/selectableItemBackground"
+                android:background="?attr/colorOnPrimary"
                 android:textAppearance="?attr/textAppearanceBodyLarge"
                 android:text="Select Date"
             android:textColorHint="?attr/colorOnSurfaceVariant" />
@@ -80,7 +85,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="12dp"
-                android:background="?attr/selectableItemBackground"
+                android:background="?attr/colorOnPrimary"
                 android:textAppearance="?attr/textAppearanceBodyLarge"
                 android:text="Select Due Date"
             android:textColorHint="?attr/colorOnPrimary" />

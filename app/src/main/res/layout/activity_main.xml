@@ -12,9 +12,10 @@
         android:id="@+id/topAppBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorOnPrimary"
+        android:background="?attr/colorSurface"
         android:title="FinancePal"
         app:titleCentered="false"
+        app:titleTextColor="?attr/colorOnSurface"
         app:menu="@menu/top_app_bar_profile" />
 
 
@@ -55,9 +56,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="?attr/colorOnPrimary"
-        app:itemIconTint="?attr/colorPrimary"
-        app:itemTextColor="?attr/colorPrimary"
+        android:background="?attr/colorSurface"
+        app:itemIconTint="?attr/colorOnSurface"
+        app:itemTextColor="?attr/colorOnSurface"
         app:menu="@menu/botttom_navigation_menu" />
 
 </RelativeLayout>
