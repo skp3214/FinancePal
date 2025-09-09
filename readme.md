@@ -2,6 +2,8 @@
 
 FinancePal is an Android app designed to simplify personal finance management. 💳 Users can add, view, categorize, and manage financial entries (e.g., `Sent` and `Received`) with advanced features for an intuitive experience. 🔍 The app follows modern Android development practices, implementing MVVM architecture with Firebase for authentication and data storage. 🗂️  
 
+https://github.com/user-attachments/assets/7932313a-97c3-43e3-91e5-3d8b4a0ea81f
+
 ---
 
 ## 📋 Table of Contents  
