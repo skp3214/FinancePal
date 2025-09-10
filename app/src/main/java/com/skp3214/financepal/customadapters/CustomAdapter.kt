@@ -42,10 +42,33 @@ class CustomAdapter(
         "Date: ${model.date}".also { holder.dateTextView.text = it }
         "Due Date: ${model.dueDate}".also { holder.dueDateTextView.text = it }
 
-        Glide.with(holder.itemView.context)
-            .load(model.image)
-            .placeholder(R.drawable.loading)
-            .into(holder.imageView)
+        // Handle different image types
+        when {
+            model.image == "no_image_uploaded" -> {
+                // No image selected - show placeholder
+                holder.imageView.setImageResource(R.drawable.nossuploaded)
+            }
+            model.image.startsWith("content://") -> {
+                // Local URI - load directly
+                Glide.with(holder.itemView.context)
+                    .load(model.image)
+                    .placeholder(R.drawable.nossuploaded)
+                    .error(R.drawable.nossuploaded)
+                    .into(holder.imageView)
+            }
+            model.image.startsWith("http") -> {
+                // Cloud URL - load with Glide
+                Glide.with(holder.itemView.context)
+                    .load(model.image)
+                    .placeholder(R.drawable.loading)
+                    .error(R.drawable.nossuploaded)
+                    .into(holder.imageView)
+            }
+            else -> {
+                // Fallback to placeholder
+                holder.imageView.setImageResource(R.drawable.nossuploaded)
+            }
+        }
 
         holder.itemView.setOnClickListener { onItemClicked(model) }
 

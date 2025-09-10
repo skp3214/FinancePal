@@ -3,9 +3,7 @@ package com.skp3214.financepal.viewmodel
 import androidx.lifecycle.*
 import com.skp3214.financepal.model.Model
 import com.skp3214.financepal.repository.FinancePalRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class FinanceViewModel(private val repository: FinancePalRepository) : ViewModel() {
 
@@ -15,61 +13,52 @@ class FinanceViewModel(private val repository: FinancePalRepository) : ViewModel
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> get() = _isLoading
 
-//    private val categoryLiveDataMap = mutableMapOf<String, MutableLiveData<List<Model>>>()
-
     init {
         _isLoading.value = true
-        fetchAllEntries()
+        observeAllEntries()
     }
 
-    private fun fetchAllEntries() = viewModelScope.launch {
-        val entries = withContext(Dispatchers.IO) {
-            repository.getAllEntries()
+    private fun observeAllEntries() {
+        viewModelScope.launch {
+            repository.getAllEntries().collect { entries ->
+                _allEntryItems.value = entries
+                _isLoading.value = false
+            }
         }
-        _allEntryItems.value = entries
-        _isLoading.value = false
     }
 
     fun getEntriesByCategory(category: String): LiveData<List<Model>> {
         val filteredLiveData = MutableLiveData<List<Model>>()
-        _isLoading.value = true
-        viewModelScope.launch {
-            val allEntries = _allEntryItems.value ?: emptyList()
-            val filteredEntries = allEntries.filter { it.category == category }
+        _allEntryItems.observeForever { allEntries ->
+            val filteredEntries = allEntries?.filter { it.category == category } ?: emptyList()
             filteredLiveData.value = filteredEntries
-            _isLoading.value = false
         }
         return filteredLiveData
     }
 
-    fun addEntry(entry: Model) = viewModelScope.launch {
-        _isLoading.value = true
-        repository.addEntry(entry)
-        fetchAllEntries()
-        _isLoading.value = false
+    fun addEntry(entry: Model) {
+        repository.addEntry(entry) { success ->
+            // Don't set loading to false here - let the flow update handle it
+        }
     }
 
-    fun deleteEntry(entry: Model) = viewModelScope.launch {
-        _isLoading.value = true
-        repository.deleteEntry(entry)
-        fetchAllEntries()
-        _isLoading.value = false
+    fun deleteEntry(entry: Model) {
+        repository.deleteEntry(entry) { success ->
+            // Don't set loading to false here - let the flow update handle it
+        }
     }
 
-    fun updateEntry(entry: Model) = viewModelScope.launch {
-        _isLoading.value = true
-        repository.updateEntry(entry)
-        fetchAllEntries()
-        _isLoading.value = false
+    fun updateEntry(entry: Model) {
+        repository.updateEntry(entry) { success ->
+            // Don't set loading to false here - let the flow update handle it
+        }
     }
 
     fun getEntryById(id: String): LiveData<Model?> {
         val entryLiveData = MutableLiveData<Model?>()
-        _isLoading.value = true
         _allEntryItems.observeForever { allEntries ->
-            val entry = allEntries.find { it.id == id }
+            val entry = allEntries?.find { it.id == id }
             entryLiveData.value = entry
-            _isLoading.value = false
         }
         return entryLiveData
     }

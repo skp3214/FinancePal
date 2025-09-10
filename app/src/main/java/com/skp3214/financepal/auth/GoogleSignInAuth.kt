@@ -69,7 +69,7 @@ class GoogleSignInAuth(
                 GetGoogleIdOption.Builder()
                     .setFilterByAuthorizedAccounts(false)
                     .setServerClientId(
-                        ""
+                        "12357921490-1ovdt6pbgkdt9fue9k95iaork84cftbd.apps.googleusercontent.com"
                     )
                     .setAutoSelectEnabled(false)
                     .build()

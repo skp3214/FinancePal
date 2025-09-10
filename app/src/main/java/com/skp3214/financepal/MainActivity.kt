@@ -8,6 +8,8 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
@@ -34,9 +36,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputEditText
 import com.skp3214.financepal.customadapters.CustomAdapter
 import com.skp3214.financepal.model.Model
 import com.skp3214.financepal.auth.EmailPasswordFirebaseAuth
@@ -58,13 +62,15 @@ class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: CustomAdapter
     private var list = mutableListOf<Model>()
-    private lateinit var imageUri: Uri
+    private var allItems = listOf<Model>()
+    private var imageUri: Uri? = null
     private lateinit var imagePickerLauncher: ActivityResultLauncher<String>
     private lateinit var selectedImage: ImageView
     private lateinit var imageRepository: ImageRepository
     private lateinit var googleSignInAuth: GoogleSignInAuth
     lateinit var firebaseRepository: FirebaseRepository
-    private var currentCategory: String? = "All"
+    private var currentCategory: String = "All"
+    private var searchQuery: String = ""
     private val financePalViewModel: FinanceViewModel by viewModels {
         FinanceViewModel.FinanceViewModelFactory((application as MyApplication).repository)
     }
@@ -79,7 +85,6 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
 
         val firebase= EmailPasswordFirebaseAuth()
         if(!firebase.isLoggedIn()){
@@ -100,9 +105,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        observeEntryItems()
-        bottomNavigationAndCurrentCategorySetup()
-        showDataWithCurrentCategory()
+        setupUI()
+        setupSearch()
+        setupFilterChips()
+        observeData()
 
         val toolbar = findViewById<Toolbar>(R.id.topAppBar)
         setSupportActionBar(toolbar)
@@ -120,7 +126,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         })
 
-
         recyclerView.adapter = adapter
 
         val fab = findViewById<FloatingActionButton>(R.id.fab)
@@ -130,6 +135,71 @@ class MainActivity : AppCompatActivity() {
 
         imagePickerLauncherSetup()
         leftSwipeDeleteAndUndoFeature()
+    }
+
+    private fun setupUI() {
+        // Any additional UI setup can go here
+    }
+
+    private fun setupSearch() {
+        val searchBar = findViewById<TextInputEditText>(R.id.search_bar)
+        searchBar.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                searchQuery = s?.toString()?.lowercase() ?: ""
+                applyFilters()
+            }
+        })
+    }
+
+    private fun setupFilterChips() {
+        val chipGroup = findViewById<ChipGroup>(R.id.chip_group_filter)
+        chipGroup.setOnCheckedStateChangeListener { _, checkedIds ->
+            if (checkedIds.isNotEmpty()) {
+                currentCategory = when (checkedIds[0]) {
+                    R.id.chip_all -> "All"
+                    R.id.chip_sent -> "Sent"
+                    R.id.chip_received -> "Received"
+                    else -> "All"
+                }
+                applyFilters()
+            }
+        }
+    }
+
+    private fun observeData() {
+        financePalViewModel.allEntryItems.observe(this) { items ->
+            allItems = items ?: emptyList()
+            applyFilters()
+        }
+    }
+
+    private fun applyFilters() {
+        var filteredItems = allItems
+
+        // Apply category filter
+        if (currentCategory != "All") {
+            filteredItems = filteredItems.filter { it.category == currentCategory }
+        }
+
+        // Apply search filter
+        if (searchQuery.isNotEmpty()) {
+            filteredItems = filteredItems.filter { item ->
+                item.name.lowercase().contains(searchQuery) ||
+                item.description.lowercase().contains(searchQuery) ||
+                item.amount.toString().contains(searchQuery)
+            }
+        }
+
+        updateRecyclerView(filteredItems)
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun updateRecyclerView(items: List<Model>) {
+        list.clear()
+        list.addAll(items)
+        adapter.notifyDataSetChanged()
     }
 
     fun showAddItemDialog(existingModel: Model? = null, firebaseRepository: FirebaseRepository) {
@@ -143,6 +213,10 @@ class MainActivity : AppCompatActivity() {
         selectedImage = dialogView.findViewById(R.id.imageView)
         val btnSelect = dialogView.findViewById<Button>(R.id.select)
         val btnSave = dialogView.findViewById<TextView>(R.id.btn_save)
+
+        // Reset imageUri for new dialog
+        imageUri = null
+        var existingImageUrl = "no_image_uploaded"
 
         tvDate.setOnClickListener { showDatePicker(tvDate,"date") }
         tvDueDate.setOnClickListener { showDatePicker(tvDueDate,"duedate") }
@@ -158,10 +232,23 @@ class MainActivity : AppCompatActivity() {
             tvDate.text = it.date
             tvDueDate.text = it.dueDate
             spinnerCategory.setSelection(getCategoryPosition(it.category, resources))
-            Glide.with(this)
-                .load(existingModel.image)
-                .placeholder(R.drawable.loading)
-                .into(selectedImage)
+            existingImageUrl = it.image
+            
+            // Load existing image
+            when {
+                it.image == "no_image_uploaded" -> {
+                    selectedImage.setImageResource(R.drawable.nossuploaded)
+                }
+                it.image.startsWith("content://") -> {
+                    Glide.with(this).load(it.image).into(selectedImage)
+                }
+                it.image.startsWith("http") -> {
+                    Glide.with(this).load(it.image).placeholder(R.drawable.loading).into(selectedImage)
+                }
+                else -> {
+                    selectedImage.setImageResource(R.drawable.nossuploaded)
+                }
+            }
         }
 
         val dialog = AlertDialog.Builder(this)
@@ -186,92 +273,71 @@ class MainActivity : AppCompatActivity() {
                     .show()
             } else {
                 val amount = amountText.toDoubleOrNull() ?: 0.0
-                if (selectedImage.drawable == null) {
-                    selectedImage.setImageResource(R.drawable.nossuploaded)
+                
+                // Determine final image URL
+                val finalImageUrl = if (imageUri != null) {
+                    // User selected new image
+                    imageUri.toString()
+                } else {
+                    // Keep existing image or use placeholder
+                    existingImageUrl
                 }
-                lifecycleScope.launch {
-                val imageByteArray=imageRepository.bitmapToByteArray(selectedImage.drawable.toBitmap())
-                val image = firebaseRepository.uploadImage(imageByteArray)
-                    if (existingModel != null) {
-                        existingModel.apply {
-                            this.name = name
-                            this.amount = amount
-                            this.description = description
-                            this.date = date
-                            this.dueDate = dueDate
-                            this.category = category
-                            this.image = image
+                
+                if (existingModel != null) {
+                    existingModel.apply {
+                        this.name = name
+                        this.amount = amount
+                        this.description = description
+                        this.date = date
+                        this.dueDate = dueDate
+                        this.category = category
+                        this.image = finalImageUrl
+                    }
+                    financePalViewModel.updateEntry(existingModel)
+                    // Force immediate refresh for updates with slight delay
+                    recyclerView.postDelayed({ applyFilters() }, 100)
+                } else {
+                    val newItem = Model("", name, amount, description, category, finalImageUrl, date, dueDate, "")
+                    addItem(newItem)
+                }
+                
+                dialog.dismiss()
+                
+                // Only try to upload if user selected a new image
+                if (imageUri != null) {
+                    lifecycleScope.launch {
+                        try {
+                            val imageByteArray = imageRepository.bitmapToByteArray(selectedImage.drawable.toBitmap())
+                            val cloudImageUrl = firebaseRepository.uploadImage(imageByteArray)
+                            
+                            // Update with cloud URL when upload succeeds
+                            if (existingModel != null) {
+                                existingModel.image = cloudImageUrl
+                                financePalViewModel.updateEntry(existingModel)
+                            } else {
+                                // For new items, find and update with cloud URL
+                                // This will be handled by repository sync
+                            }
+                        } catch (e: Exception) {
+                            // Keep local URI - will show local image
                         }
-                        financePalViewModel.updateEntry(existingModel)
-                    } else {
-                        val newItem = Model("", name, amount, description, category,image,date, dueDate,"")
-                        addItem(newItem)
                     }
                 }
-                dialog.dismiss()
             }
         }
         dialog.show()
     }
 
-    private fun bottomNavigationAndCurrentCategorySetup() {
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
-        bottomNavigationView.setOnItemSelectedListener { item ->
-            currentCategory = when (item.itemId) {
-                R.id.item_1 -> "All"
-                R.id.item_2 -> "Sent"
-                R.id.item_3 -> "Received"
-                else -> null
-            }
-            showDataWithCurrentCategory()
-            true
-        }
-    }
-
-    private fun showDataWithCurrentCategory() {
-        financePalViewModel.allEntryItems.removeObservers(this)
-        financePalViewModel.getEntriesByCategory("Sent").removeObservers(this)
-        financePalViewModel.getEntriesByCategory("Received").removeObservers(this)
-
-        when (currentCategory) {
-            "All" -> {
-                financePalViewModel.allEntryItems.observe(this) { items ->
-                    updateRecyclerView(items)
-                }
-            }
-            else -> {
-                financePalViewModel.getEntriesByCategory(currentCategory!!).observe(this) { items ->
-                    updateRecyclerView(items)
-                }
-            }
-        }
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    private fun updateRecyclerView(items: List<Model>) {
-        list.clear()
-        list.addAll(items)
-        adapter.notifyDataSetChanged()
-    }
-
     private fun deleteItem(model: Model) {
-        lifecycleScope.launch {
-            financePalViewModel.deleteEntry(model)
-        }
+        financePalViewModel.deleteEntry(model)
+        // Force immediate refresh with slight delay
+        recyclerView.postDelayed({ applyFilters() }, 100)
     }
 
     private fun addItem(model: Model){
-        lifecycleScope.launch {
-            financePalViewModel.addEntry(model)
-        }
-    }
-
-    private fun observeEntryItems() {
-        financePalViewModel.allEntryItems.observe(this) { entryItems ->
-            entryItems?.let {
-                updateRecyclerView(it)
-            }
-        }
+        financePalViewModel.addEntry(model)
+        // Force immediate refresh with slight delay
+        recyclerView.postDelayed({ applyFilters() }, 100)
     }
 
     private fun leftSwipeDeleteAndUndoFeature(){
@@ -347,7 +413,6 @@ class MainActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
-
 
     private fun showDatePicker(textView: TextView, type: String) {
         val dateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
