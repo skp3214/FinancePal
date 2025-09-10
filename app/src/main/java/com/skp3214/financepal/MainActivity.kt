@@ -4,15 +4,11 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -25,26 +21,25 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
-import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
-import com.skp3214.financepal.customadapters.CustomAdapter
-import com.skp3214.financepal.model.Model
 import com.skp3214.financepal.auth.EmailPasswordFirebaseAuth
 import com.skp3214.financepal.auth.GoogleSignInAuth
+import com.skp3214.financepal.customadapters.CustomAdapter
+import com.skp3214.financepal.model.Model
 import com.skp3214.financepal.repository.FirebaseRepository
 import com.skp3214.financepal.utils.ImageRepository
 import com.skp3214.financepal.utils.getCategoryPosition
@@ -56,7 +51,6 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-import androidx.core.graphics.drawable.toDrawable
 
 class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
@@ -69,6 +63,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var imageRepository: ImageRepository
     private lateinit var googleSignInAuth: GoogleSignInAuth
     lateinit var firebaseRepository: FirebaseRepository
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navigationView: NavigationView
+    private var currentSortOrder: String = "none"
     private var currentCategory: String = "All"
     private var searchQuery: String = ""
     private val financePalViewModel: FinanceViewModel by viewModels {
@@ -106,12 +103,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         setupUI()
+        setupNavigationDrawer()
         setupSearch()
         setupFilterChips()
+        setupProfileImage()
         observeData()
-
-        val toolbar = findViewById<Toolbar>(R.id.topAppBar)
-        setSupportActionBar(toolbar)
 
         recyclerView = findViewById(R.id.recyclerview)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -138,7 +134,69 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupUI() {
-        // Any additional UI setup can go here
+        drawerLayout = findViewById(R.id.drawer_layout)
+        navigationView = findViewById(R.id.navigation_view)
+    }
+
+    private fun setupNavigationDrawer() {
+        val hamburgerMenu = findViewById<ImageView>(R.id.hamburger_menu)
+        hamburgerMenu.setOnClickListener {
+            drawerLayout.openDrawer(GravityCompat.START)
+        }
+
+        navigationView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_all_transactions -> {
+                    currentCategory = "All"
+                    applyFilters()
+                }
+                R.id.nav_sent -> {
+                    currentCategory = "Sent"
+                    applyFilters()
+                }
+                R.id.nav_received -> {
+                    currentCategory = "Received"
+                    applyFilters()
+                }
+                R.id.nav_sort_amount_asc -> {
+                    currentSortOrder = "amount_asc"
+                    applyFilters()
+                }
+                R.id.nav_sort_amount_desc -> {
+                    currentSortOrder = "amount_desc"
+                    applyFilters()
+                }
+                R.id.nav_sort_date_asc -> {
+                    currentSortOrder = "date_asc"
+                    applyFilters()
+                }
+                R.id.nav_sort_date_desc -> {
+                    currentSortOrder = "date_desc"
+                    applyFilters()
+                }
+            }
+            drawerLayout.closeDrawer(GravityCompat.START)
+            true
+        }
+    }
+
+    private fun setupProfileImage() {
+        val profileImage = findViewById<ImageView>(R.id.profile_image)
+        
+        // Load user profile image
+        val user = EmailPasswordFirebaseAuth().getCurrentUser()
+        user?.photoUrl?.let { photoUrl ->
+            Glide.with(this)
+                .load(photoUrl)
+                .placeholder(R.drawable.baseline_account_circle_24)
+                .circleCrop()
+                .into(profileImage)
+        }
+        
+        // Set click listener to navigate to profile
+        profileImage.setOnClickListener {
+            startActivity(Intent(this, UserProfileActivity::class.java))
+        }
     }
 
     private fun setupSearch() {
@@ -190,6 +248,15 @@ class MainActivity : AppCompatActivity() {
                 item.description.lowercase().contains(searchQuery) ||
                 item.amount.toString().contains(searchQuery)
             }
+        }
+
+        // Apply sorting
+        filteredItems = when (currentSortOrder) {
+            "amount_asc" -> filteredItems.sortedBy { it.amount }
+            "amount_desc" -> filteredItems.sortedByDescending { it.amount }
+            "date_asc" -> filteredItems.sortedBy { it.date }
+            "date_desc" -> filteredItems.sortedByDescending { it.date }
+            else -> filteredItems
         }
 
         updateRecyclerView(filteredItems)
@@ -318,7 +385,7 @@ class MainActivity : AppCompatActivity() {
                                 // For new items, find and update with cloud URL
                                 // This will be handled by repository sync
                             }
-                        } catch (e: Exception) {
+                        } catch (_: Exception) {
                             // Keep local URI - will show local image
                         }
                     }
@@ -378,39 +445,6 @@ class MainActivity : AppCompatActivity() {
                 imageUri = it
                 selectedImage.setImageURI(it)
             }
-        }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.top_app_bar_profile, menu)
-        val user = EmailPasswordFirebaseAuth().getCurrentUser()
-        user?.photoUrl?.let { photoUrl ->
-            val menuItem = menu?.findItem(R.id.action_profile)
-            Glide.with(this)
-                .asBitmap()
-                .load(photoUrl)
-                .placeholder(R.drawable.baseline_account_circle_24)
-                .circleCrop()
-                .into(object : CustomTarget<Bitmap>() {
-                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                        menuItem?.icon = resource.toDrawable(resources)
-                    }
-
-                    override fun onLoadCleared(placeholder: Drawable?) {
-                        menuItem?.icon = placeholder
-                    }
-                })
-        }
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_profile -> {
-                startActivity(Intent(this, UserProfileActivity::class.java))
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
         }
     }
 

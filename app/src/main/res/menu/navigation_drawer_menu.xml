@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_all_transactions"
+            android:icon="@drawable/ic_all"
+            android:title="All Transactions" />
+        <item
+            android:id="@+id/nav_sent"
+            android:icon="@drawable/ic_sent"
+            android:title="Sent" />
+        <item
+            android:id="@+id/nav_received"
+            android:icon="@drawable/ic_received"
+            android:title="Received" />
+    </group>
+
+    <item android:title="Sort By">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_sort_amount_asc"
+                    android:icon="@drawable/ic_sort_asc"
+                    android:title="Amount (Low to High)" />
+                <item
+                    android:id="@+id/nav_sort_amount_desc"
+                    android:icon="@drawable/ic_sort_desc"
+                    android:title="Amount (High to Low)" />
+                <item
+                    android:id="@+id/nav_sort_date_asc"
+                    android:icon="@drawable/ic_date_asc"
+                    android:title="Date (Oldest First)" />
+                <item
+                    android:id="@+id/nav_sort_date_desc"
+                    android:icon="@drawable/ic_date_desc"
+                    android:title="Date (Newest First)" />
+            </group>
+        </menu>
+    </item>
+
+</menu>

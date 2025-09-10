@@ -12,7 +12,7 @@
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white">
+        android:background="@color/black">
 
         <!-- Gmail-style TopAppBar -->
         <LinearLayout
@@ -30,9 +30,9 @@
                 android:id="@+id/hamburger_menu"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
+                android:contentDescription="hamburger icon"
                 android:src="@drawable/ic_menu"
                 android:layout_marginEnd="16dp"
-                android:contentDescription="hamburger menu"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:focusable="true"
@@ -51,7 +51,8 @@
                 app:boxCornerRadiusTopEnd="24dp"
                 app:boxCornerRadiusBottomStart="24dp"
                 app:boxCornerRadiusBottomEnd="24dp"
-                >
+                app:boxStrokeColor="@color/white"
+                app:startIconTint="@color/black">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/search_bar"
@@ -72,8 +73,8 @@
                 android:id="@+id/profile_image"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:src="@drawable/baseline_account_circle_24"
                 android:contentDescription="profile pic"
+                android:src="@drawable/baseline_account_circle_24"
                 android:clickable="true"
                 android:focusable="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
@@ -123,7 +124,7 @@
             android:layout_height="match_parent"
             android:layout_below="@id/chip_group_filter"
             android:layout_marginTop="8dp"
-            android:background="@color/white"
+            android:background="@color/black"
             android:clipToPadding="false"
             android:paddingBottom="80dp" />
 
@@ -133,7 +134,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:visibility="gone"
-            android:indeterminateTint="?attr/colorPrimary" />
+            android:indeterminateTint="@color/white" />
 
         <!-- Floating Action Button -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -144,8 +145,8 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
             android:src="@drawable/baseline_add_24"
-            app:tint="?attr/colorOnPrimary"
-            android:backgroundTint="?attr/colorPrimary"
+            app:tint="@color/black"
+            android:backgroundTint="@color/white"
             android:contentDescription="Add" />
 
     </RelativeLayout>
