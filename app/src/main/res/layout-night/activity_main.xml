@@ -12,14 +12,14 @@
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/black">
+        android:background="@color/darkgrey">
 
         <!-- Gmail-style TopAppBar -->
         <LinearLayout
             android:id="@+id/topAppBar"
             android:layout_width="match_parent"
             android:layout_height="64dp"
-            android:background="@color/grey"
+            android:background="@color/darkgrey"
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:paddingHorizontal="16dp"
@@ -32,6 +32,7 @@
                 android:layout_height="36dp"
                 android:contentDescription="hamburger icon"
                 android:src="@drawable/ic_menu"
+                app:tint="@color/white"
                 android:layout_marginEnd="16dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
@@ -52,18 +53,19 @@
                 app:boxCornerRadiusBottomStart="24dp"
                 app:boxCornerRadiusBottomEnd="24dp"
                 app:boxStrokeColor="@color/white"
-                app:startIconTint="@color/black">
+                app:boxBackgroundColor="@color/black"
+                app:startIconTint="@color/white">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/search_bar"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:hint="Search transactions..."
+                    android:hint="Search "
                     android:inputType="text"
                     android:maxLines="1"
                     android:textSize="16sp"
-                    android:textColor="@color/black"
-                    android:textColorHint="@color/black"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/white"
                     android:paddingVertical="12dp" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -99,21 +101,27 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="All"
-                android:checked="true" />
+                android:checked="true"
+                app:chipBackgroundColor="@color/chip_background_night"
+                android:textColor="@color/chip_text_night" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_sent"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sent" />
+                android:text="Sent"
+                app:chipBackgroundColor="@color/chip_background_night"
+                android:textColor="@color/chip_text_night" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_received"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Received" />
+                android:text="Received"
+                app:chipBackgroundColor="@color/chip_background_night"
+                android:textColor="@color/chip_text_night" />
 
         </com.google.android.material.chip.ChipGroup>
 
@@ -124,7 +132,7 @@
             android:layout_height="match_parent"
             android:layout_below="@id/chip_group_filter"
             android:layout_marginTop="8dp"
-            android:background="@color/black"
+            android:background="@color/darkgrey"
             android:clipToPadding="false"
             android:paddingBottom="80dp" />
 
