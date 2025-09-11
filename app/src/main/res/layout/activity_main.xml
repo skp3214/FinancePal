@@ -19,7 +19,7 @@
             android:id="@+id/topAppBar"
             android:layout_width="match_parent"
             android:layout_height="64dp"
-            android:background="@color/grey"
+            android:background="@color/lightgrey"
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:paddingHorizontal="16dp"
@@ -30,9 +30,10 @@
                 android:id="@+id/hamburger_menu"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
+                android:contentDescription="hamburger icon"
                 android:src="@drawable/ic_menu"
+                app:tint="@color/black"
                 android:layout_marginEnd="16dp"
-                android:contentDescription="hamburger menu"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:focusable="true"
@@ -51,18 +52,20 @@
                 app:boxCornerRadiusTopEnd="24dp"
                 app:boxCornerRadiusBottomStart="24dp"
                 app:boxCornerRadiusBottomEnd="24dp"
-                >
+                app:boxStrokeColor="@color/black"
+                app:boxBackgroundColor="@color/white"
+                app:startIconTint="@color/white">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/search_bar"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:hint="Search transactions..."
+                    android:hint="Search "
                     android:inputType="text"
                     android:maxLines="1"
                     android:textSize="16sp"
                     android:textColor="@color/black"
-                    android:textColorHint="@color/black"
+                    android:textColorHint="@color/white"
                     android:paddingVertical="12dp" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -72,8 +75,8 @@
                 android:id="@+id/profile_image"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:src="@drawable/baseline_account_circle_24"
                 android:contentDescription="profile pic"
+                android:src="@drawable/baseline_account_circle_24"
                 android:clickable="true"
                 android:focusable="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
@@ -98,21 +101,27 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="All"
-                android:checked="true" />
+                android:checked="true"
+                app:chipBackgroundColor="@color/chip_background_light"
+                android:textColor="@color/chip_text_light" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_sent"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sent" />
+                android:text="Sent"
+                app:chipBackgroundColor="@color/chip_background_light"
+                android:textColor="@color/chip_text_light" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_received"
                 style="@style/Widget.Material3.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Received" />
+                android:text="Received"
+                app:chipBackgroundColor="@color/chip_background_light"
+                android:textColor="@color/chip_text_light" />
 
         </com.google.android.material.chip.ChipGroup>
 
