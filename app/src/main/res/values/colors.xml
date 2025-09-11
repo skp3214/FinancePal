@@ -3,7 +3,15 @@
     <color name="black">#000000</color>
     <color name="white">#ffffff</color>
     <color name="grey">#E2DFDF</color>
-    <color name="darkgrey">#141313</color>
+    <color name="darkgrey">#1F1E1E</color>
     <color name="lightgrey">#F8F5F5</color>
+    
+    <!-- Profile Page Colors -->
+    <color name="primary_color">#6200EE</color>
+    <color name="background_light">#F5F5F5</color>
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
+    <color name="success_color">#4CAF50</color>
+    <color name="error_color">#F44336</color>
 
 </resources>

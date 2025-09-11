@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:text="Edit Profile"
+        android:textAppearance="?attr/textAppearanceHeadline6"
+        android:textColor="@color/text_primary"
+        android:textStyle="bold" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/dialogProfileImage"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerHorizontal="true"
+            android:background="@color/white"
+            android:padding="4dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/baseline_account_circle_24"
+            app:shapeAppearanceOverlay="@style/CircularImageView"
+            app:strokeColor="@color/primary_color"
+            app:strokeWidth="2dp" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/changePhotoFab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@id/dialogProfileImage"
+            android:layout_alignBottom="@id/dialogProfileImage"
+            android:layout_marginEnd="-8dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/baseline_edit_24"
+            app:fabSize="mini"
+            app:tint="@color/white" />
+
+    </RelativeLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:hint="Full Name"
+        app:boxStrokeColor="@color/primary_color"
+        app:hintTextColor="@color/primary_color">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:hint="Email"
+        app:boxStrokeColor="@color/primary_color"
+        app:hintTextColor="@color/primary_color">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:inputType="textEmailAddress" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/cancelButton"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="Cancel"
+            android:textColor="@color/text_secondary" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/saveButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save Changes" />
+
+    </LinearLayout>
+
+</LinearLayout>

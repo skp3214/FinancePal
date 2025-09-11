@@ -31,6 +31,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
@@ -189,6 +190,7 @@ class MainActivity : AppCompatActivity() {
             Glide.with(this)
                 .load(photoUrl)
                 .placeholder(R.drawable.baseline_account_circle_24)
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 .circleCrop()
                 .into(profileImage)
         }
@@ -197,6 +199,11 @@ class MainActivity : AppCompatActivity() {
         profileImage.setOnClickListener {
             startActivity(Intent(this, UserProfileActivity::class.java))
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        setupProfileImage()
     }
 
     private fun setupSearch() {
