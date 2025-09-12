@@ -348,102 +348,85 @@ class MainActivity : AppCompatActivity() {
             } else {
                 val amount = amountText.toDoubleOrNull() ?: 0.0
                 
-                // Determine final image URL
-                val finalImageUrl = if (imageUri != null) {
-                    // User selected new image
-                    imageUri.toString()
-                } else {
-                    // Keep existing image or use placeholder
-                    existingImageUrl
-                }
-                
-                if (existingModel != null) {
-                    existingModel.apply {
-                        this.name = name
-                        this.amount = amount
-                        this.description = description
-                        this.date = date
-                        this.dueDate = dueDate
-                        this.category = category
-                        this.image = finalImageUrl
-                    }
-                    financePalViewModel.updateEntry(existingModel)
-                    // Force immediate refresh for updates with slight delay
-                    recyclerView.postDelayed({ applyFilters() }, 100)
-                } else {
-                    val newItem = Model("", name, amount, description, category, finalImageUrl, date, dueDate, "")
-                    addItem(newItem)
-                }
-                
-                dialog.dismiss()
-                
-                // Only try to upload if user selected a new image
+                // Handle image upload first if new image selected
+                // Handle image upload first if new image selected
                 if (imageUri != null) {
+                    // Show progress while uploading
+                    btnSave.isEnabled = false
+                    btnSave.text = "Uploading..."
+                    
                     lifecycleScope.launch {
                         try {
                             val imageByteArray = imageRepository.bitmapToByteArray(selectedImage.drawable.toBitmap())
                             val cloudImageUrl = firebaseRepository.uploadImage(imageByteArray)
                             
-                            // Update with cloud URL when upload succeeds
-                            if (existingModel != null) {
-                                existingModel.image = cloudImageUrl
-                                financePalViewModel.updateEntry(existingModel)
-                            } else {
-                                // For new items, find and update with cloud URL
-                                // This will be handled by repository sync
-                            }
-                        } catch (_: Exception) {
-                            // Keep local URI - will show local image
+                            // Save with cloud URL
+                            saveItemWithImage(existingModel, name, amount, description, date, dueDate, category, cloudImageUrl)
+                            dialog.dismiss()
+                        } catch (e: Exception) {
+                            // If upload fails, save with placeholder
+                            saveItemWithImage(existingModel, name, amount, description, date, dueDate, category, "no_image_uploaded")
+                            dialog.dismiss()
                         }
                     }
+                } else {
+                    // No new image, use existing or placeholder
+                    saveItemWithImage(existingModel, name, amount, description, date, dueDate, category, existingImageUrl)
+                    dialog.dismiss()
                 }
             }
         }
         dialog.show()
     }
 
+    private fun addItem(model: Model) {
+        financePalViewModel.addEntry(model)
+    }
+
     private fun deleteItem(model: Model) {
         financePalViewModel.deleteEntry(model)
-        // Force immediate refresh with slight delay
-        recyclerView.postDelayed({ applyFilters() }, 100)
     }
 
-    private fun addItem(model: Model){
-        financePalViewModel.addEntry(model)
-        // Force immediate refresh with slight delay
-        recyclerView.postDelayed({ applyFilters() }, 100)
-    }
-
-    private fun leftSwipeDeleteAndUndoFeature(){
+    private fun leftSwipeDeleteAndUndoFeature() {
         val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
+            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
                 return false
             }
 
-            @SuppressLint("NotifyDataSetChanged")
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val position = viewHolder.layoutPosition
-                val deletedModel = list[position]
-                deleteItem(deletedModel)
-                adapter.notifyItemRemoved(position)
+                val position = viewHolder.adapterPosition
+                val deletedItem = list[position]
 
-                Snackbar.make(
-                    recyclerView,
-                    "Item deleted",
-                    Snackbar.LENGTH_LONG
-                ).setAction("Undo") {
-                    addItem(deletedModel)
-                    adapter.notifyDataSetChanged()
-                }.show()
+                financePalViewModel.deleteEntry(deletedItem)
+
+                Snackbar.make(recyclerView, "Item deleted", Snackbar.LENGTH_LONG)
+                    .setAction("Undo") {
+                        financePalViewModel.addEntry(deletedItem)
+                    }.show()
             }
         }
 
         val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
         itemTouchHelper.attachToRecyclerView(recyclerView)
+    }
+
+    private fun saveItemWithImage(existingModel: Model?, name: String, amount: Double, description: String, date: String, dueDate: String, category: String, imageUrl: String) {
+        if (existingModel != null) {
+            existingModel.apply {
+                this.name = name
+                this.amount = amount
+                this.description = description
+                this.date = date
+                this.dueDate = dueDate
+                this.category = category
+                this.image = imageUrl
+            }
+            financePalViewModel.updateEntry(existingModel)
+            recyclerView.postDelayed({ applyFilters() }, 100)
+        } else {
+            val newItem = Model("", name, amount, description, category, imageUrl, date, dueDate, "")
+            addItem(newItem)
+        }
     }
 
     private fun imagePickerLauncherSetup(){

@@ -151,10 +151,10 @@ class FirebaseRepository {
     suspend fun uploadImage(imageBytes: ByteArray): String {
         return try {
             val imageRef = storageRef.child("images/${UUID.randomUUID()}.jpg")
-            imageRef.putBytes(imageBytes).await().storage.downloadUrl.await().toString()
+            val uploadTask = imageRef.putBytes(imageBytes).await()
+            uploadTask.storage.downloadUrl.await().toString()
         } catch (e: Exception) {
-            // Return placeholder URL when offline
-            "offline_image_${UUID.randomUUID()}"
+            throw e // Let the caller handle the exception
         }
     }
 }
