@@ -29,6 +29,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.text.NumberFormat
 import java.util.Locale
+import androidx.core.graphics.toColorInt
+import kotlin.math.abs
 
 class UserProfileActivity : AppCompatActivity() {
     private lateinit var auth: EmailPasswordFirebaseAuth
@@ -45,6 +47,7 @@ class UserProfileActivity : AppCompatActivity() {
     private lateinit var totalEntriesChip: com.google.android.material.chip.Chip
     private lateinit var receivedChip: com.google.android.material.chip.Chip
     private lateinit var sentChip: com.google.android.material.chip.Chip
+    private lateinit var netBalanceChip: com.google.android.material.chip.Chip
     private lateinit var changePasswordLayout: LinearLayout
     private lateinit var privacyLayout: LinearLayout
     private lateinit var logoutButton: MaterialButton
@@ -97,6 +100,7 @@ class UserProfileActivity : AppCompatActivity() {
         totalEntriesChip = findViewById(R.id.totalEntriesChip)
         receivedChip = findViewById(R.id.receivedChip)
         sentChip = findViewById(R.id.sentChip)
+        netBalanceChip = findViewById(R.id.netBalanceChip)
         changePasswordLayout = findViewById(R.id.changePasswordLayout)
         privacyLayout = findViewById(R.id.privacyLayout)
         logoutButton = findViewById(R.id.btn_logout)
@@ -170,10 +174,28 @@ class UserProfileActivity : AppCompatActivity() {
 
     private fun updateStatisticsUI(entries: Int, received: Double, sent: Double) {
         val currencyFormat = NumberFormat.getCurrencyInstance(Locale("en", "IN"))
+
+        "$entries Entries".also { totalEntriesChip.text = it }
+        "Total Received: ${currencyFormat.format(received)}".also { receivedChip.text = it }
+        "Total Sent: ${currencyFormat.format(sent)}".also { sentChip.text = it }
         
-        totalEntriesChip.text = "$entries Entries"
-        receivedChip.text = "↗ ${currencyFormat.format(received)}"
-        sentChip.text = "↙ ${currencyFormat.format(sent)}"
+        // Calculate and display difference amount with +/- and color coding
+        val netBalance = received - sent
+        val balanceText = if (netBalance >= 0) {
+            "+ ${currencyFormat.format(netBalance)}"
+        } else {
+            val newNetBalance = abs(netBalance)
+            "- ${currencyFormat.format(newNetBalance)}"
+        }
+        netBalanceChip.text = balanceText
+        
+        // Change color based on positive/negative balance
+        val balanceColor = if (netBalance >= 0) {
+            "#4CAF50".toColorInt() // Green for surplus
+        } else {
+            "#F44336".toColorInt() // Red for loss
+        }
+        netBalanceChip.chipBackgroundColor = android.content.res.ColorStateList.valueOf(balanceColor)
     }
 
     private fun setupClickListeners() {

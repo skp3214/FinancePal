@@ -53,6 +53,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="16dp"
+                    android:contentDescription="profile fab"
                     android:backgroundTint="@color/white"
                     android:src="@drawable/baseline_edit_24"
                     app:fabSize="mini"
@@ -168,24 +169,25 @@
                         android:orientation="vertical"
                         app:layout_constraintGuide_percent="0.5" />
 
-                    <!-- Received Amount Chip -->
+                    <!-- Net Balance Chip -->
+
                     <com.google.android.material.chip.Chip
-                        android:id="@+id/receivedChip"
+                        android:id="@+id/netBalanceChip"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="20dp"
                         android:text="₹0"
-                        android:textColor="@color/black"
+                        android:textColor="@color/white"
                         android:textStyle="bold"
-                        app:chipBackgroundColor="@color/lightgrey"
+                        app:chipBackgroundColor="@color/primary_color"
                         app:chipCornerRadius="12dp"
-                        app:chipIcon="@drawable/ic_received"
-                        app:chipIconTint="@color/black"
+                        app:chipIcon="@drawable/ic_balance"
+                        app:chipIconTint="@color/white"
                         app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="1.0"
                         app:layout_constraintStart_toEndOf="@id/guideline1"
-                        app:layout_constraintTop_toTopOf="@id/totalEntriesChip" />
+                        app:layout_constraintTop_toBottomOf="@id/statsTitle" />
 
-                    <!-- Sent Amount Chip -->
                     <com.google.android.material.chip.Chip
                         android:id="@+id/sentChip"
                         android:layout_width="0dp"
@@ -201,6 +203,25 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/totalEntriesChip" />
+
+                    <!-- Total Received Chip -->
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/receivedChip"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="₹0"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        app:chipBackgroundColor="@color/lightgrey"
+                        app:chipCornerRadius="12dp"
+                        app:chipIcon="@drawable/ic_received"
+                        app:chipIconTint="@color/black"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/sentChip"
+
+                        />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -255,6 +276,7 @@
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
+                            android:contentDescription="baseline lock"
                             android:src="@drawable/baseline_lock_24"
                             app:tint="@color/black" />
 
@@ -270,6 +292,7 @@
                         <ImageView
                             android:layout_width="20dp"
                             android:layout_height="20dp"
+                            android:contentDescription="forward arrow"
                             android:src="@drawable/baseline_arrow_forward_ios_24"
                             app:tint="@color/grey" />
 
@@ -301,6 +324,7 @@
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
+                            android:contentDescription="privacy"
                             android:src="@drawable/baseline_privacy_tip_24"
                             app:tint="@color/black" />
 
@@ -316,6 +340,7 @@
                         <ImageView
                             android:layout_width="20dp"
                             android:layout_height="20dp"
+                            android:contentDescription="arrow forward"
                             android:src="@drawable/baseline_arrow_forward_ios_24"
                             app:tint="@color/grey" />
 
