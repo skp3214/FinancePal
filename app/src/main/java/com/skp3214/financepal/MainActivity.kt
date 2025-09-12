@@ -361,12 +361,24 @@ class MainActivity : AppCompatActivity() {
                             val cloudImageUrl = firebaseRepository.uploadImage(imageByteArray)
                             
                             // Save with cloud URL
-                            saveItemWithImage(existingModel, name, amount, description, date, dueDate, category, cloudImageUrl)
-                            dialog.dismiss()
+                            runOnUiThread {
+                                saveItemWithImage(existingModel, name, amount, description, date, dueDate, category, cloudImageUrl)
+                                
+                                // Reset button state and close dialog
+                                btnSave.isEnabled = true
+                                btnSave.text = "Save"
+                                dialog.dismiss()
+                            }
                         } catch (e: Exception) {
                             // If upload fails, save with placeholder
-                            saveItemWithImage(existingModel, name, amount, description, date, dueDate, category, "no_image_uploaded")
-                            dialog.dismiss()
+                            runOnUiThread {
+                                saveItemWithImage(existingModel, name, amount, description, date, dueDate, category, "no_image_uploaded")
+                                
+                                // Reset button state and close dialog
+                                btnSave.isEnabled = true
+                                btnSave.text = "Save"
+                                dialog.dismiss()
+                            }
                         }
                     }
                 } else {
