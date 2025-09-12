@@ -48,6 +48,10 @@ class CustomAdapter(
                 // No image selected - show placeholder
                 holder.imageView.setImageResource(R.drawable.nossuploaded)
             }
+            model.image.startsWith("loading_image_") -> {
+                // Image is being uploaded - show loading
+                holder.imageView.setImageResource(R.drawable.loading)
+            }
             model.image.startsWith("content://") -> {
                 // Local URI - load directly
                 Glide.with(holder.itemView.context)

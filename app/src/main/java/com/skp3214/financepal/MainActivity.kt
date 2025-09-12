@@ -349,35 +349,62 @@ class MainActivity : AppCompatActivity() {
                 val amount = amountText.toDoubleOrNull() ?: 0.0
                 
                 // Handle image upload first if new image selected
-                // Handle image upload first if new image selected
+                // Save item immediately with placeholder, then upload image in background
                 if (imageUri != null) {
-                    // Show progress while uploading
-                    btnSave.isEnabled = false
-                    btnSave.text = "Uploading..."
+                    // Save immediately with loading placeholder
+                    val tempImageUrl = "loading_image_${System.currentTimeMillis()}"
+                    saveItemWithImage(existingModel, name, amount, description, date, dueDate, category, tempImageUrl)
+                    dialog.dismiss()
                     
+                    // Upload image in background and update
                     lifecycleScope.launch {
                         try {
                             val imageByteArray = imageRepository.bitmapToByteArray(selectedImage.drawable.toBitmap())
                             val cloudImageUrl = firebaseRepository.uploadImage(imageByteArray)
                             
-                            // Save with cloud URL
-                            runOnUiThread {
-                                saveItemWithImage(existingModel, name, amount, description, date, dueDate, category, cloudImageUrl)
-                                
-                                // Reset button state and close dialog
-                                btnSave.isEnabled = true
-                                btnSave.text = "Save"
-                                dialog.dismiss()
+                            // Update with real cloud URL
+                            if (existingModel != null) {
+                                existingModel.image = cloudImageUrl
+                                financePalViewModel.updateEntry(existingModel)
+                                // Notify adapter to refresh this item
+                                val position = list.indexOf(existingModel)
+                                if (position >= 0) {
+                                    adapter.notifyItemChanged(position)
+                                }
+                            } else {
+                                // Find the newly created item and update it
+                                val newItem = list.find { it.image == tempImageUrl }
+                                newItem?.let {
+                                    it.image = cloudImageUrl
+                                    financePalViewModel.updateEntry(it)
+                                    // Notify adapter to refresh this item
+                                    val position = list.indexOf(it)
+                                    if (position >= 0) {
+                                        adapter.notifyItemChanged(position)
+                                    }
+                                }
                             }
                         } catch (e: Exception) {
-                            // If upload fails, save with placeholder
-                            runOnUiThread {
-                                saveItemWithImage(existingModel, name, amount, description, date, dueDate, category, "no_image_uploaded")
-                                
-                                // Reset button state and close dialog
-                                btnSave.isEnabled = true
-                                btnSave.text = "Save"
-                                dialog.dismiss()
+                            // If upload fails, update to no image placeholder
+                            if (existingModel != null) {
+                                existingModel.image = "no_image_uploaded"
+                                financePalViewModel.updateEntry(existingModel)
+                                // Notify adapter to refresh this item
+                                val position = list.indexOf(existingModel)
+                                if (position >= 0) {
+                                    adapter.notifyItemChanged(position)
+                                }
+                            } else {
+                                val newItem = list.find { it.image == tempImageUrl }
+                                newItem?.let {
+                                    it.image = "no_image_uploaded"
+                                    financePalViewModel.updateEntry(it)
+                                    // Notify adapter to refresh this item
+                                    val position = list.indexOf(it)
+                                    if (position >= 0) {
+                                        adapter.notifyItemChanged(position)
+                                    }
+                                }
                             }
                         }
                     }
